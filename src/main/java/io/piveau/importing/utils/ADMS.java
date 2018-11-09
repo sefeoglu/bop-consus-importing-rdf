@@ -1,4 +1,4 @@
-package de.fhg.fokus.viaduct.consus.importing.utils;
+package io.piveau.importing.utils;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;

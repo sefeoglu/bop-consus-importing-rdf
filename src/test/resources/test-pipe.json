@@ -1,0 +1,27 @@
+{
+  "header": {
+    "id": "3ff7a0a7-2fc3-4e84-a6ef-a83ab55b698c",
+    "title": "Test Pipe",
+    "context": "JUnit5 Tests",
+    "transport": "payload",
+    "version": "1.0"
+  },
+  "body": {
+    "segments": [
+      {
+        "header": {
+          "id": "40330e5d-890a-497c-a34c-e7a6324118cd",
+          "segmentNumber": 1,
+          "title": "Importing from GovData",
+          "processed": false
+        },
+        "body": {
+          "config": {
+            "address": "https://www.govdata.de/ckan/catalog/catalog.rdf",
+            "outputFormat": "TURTLE"
+          }
+        }
+      }
+    ]
+  }
+}
