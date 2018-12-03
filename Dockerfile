@@ -1,6 +1,6 @@
 FROM openjdk:jre-alpine
 
-ENV VERTICLE_FILE piveau-importing-rdf-0.0.1-alpha-fat.jar
+ENV VERTICLE_FILE piveau-importing-rdf-fat.jar
 
 # Set the location of the verticles
 ENV VERTICLE_HOME /usr/verticles

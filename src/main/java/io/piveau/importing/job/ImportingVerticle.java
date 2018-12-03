@@ -28,7 +28,7 @@ public class ImportingVerticle extends AbstractVerticle {
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    public static final String ADDRESS = "io.piveau.pipe.importing";
+    public static final String ADDRESS = "io.piveau.pipe.importing.queue";
 
     @Override
     public void start(Future<Void> startFuture) {
@@ -71,6 +71,7 @@ public class ImportingVerticle extends AbstractVerticle {
                 Hydra hydra = Hydra.findPaging(page);
 
                 if (hydra != null) {
+                    pipeContext.setTotal(hydra.total());
                     String next = hydra.next();
                     if (next != null) {
                         log.info(next);
@@ -84,7 +85,7 @@ public class ImportingVerticle extends AbstractVerticle {
 
                 page.close();
             } else {
-                pipeContext.log().error("import finished with failure", ar.cause());
+                pipeContext.log().error("Import finished with failure", ar.cause());
             }
         });
     }
