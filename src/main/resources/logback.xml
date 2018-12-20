@@ -6,13 +6,23 @@
         </encoder>
     </appender>
 
+    <appender name="PIPEFILE" class="ch.qos.logback.core.FileAppender">
+        <file>${PIVEAU_PIPE_LOG_PATH:-logs/piveau-pipe.log}</file>
+        <append>true</append>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5level %logger %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <logger name="com.mchange.v2" level="warn"/>
     <logger name="io.netty" level="warn"/>
-    <logger name="org.apache.jena" level="warn"/>
     <logger name="io.vertx" level="info"/>
-    <logger name="org.mongodb" level="info"/>
     <logger name="com.hazelcast" level="debug"/>
-    <logger name="de.fhg.fokus.viaduct" level="debug"/>
+    <logger name="io.piveau" level="debug"/>
+
+    <logger name="pipe" level="DEBUG">
+        <appender-ref ref="PIPEFILE" />
+    </logger>
 
     <root level="debug">
         <appender-ref ref="STDOUT"/>
