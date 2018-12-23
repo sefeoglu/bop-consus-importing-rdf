@@ -1,6 +1,7 @@
 {
   "header": {
     "id": "3ff7a0a7-2fc3-4e84-a6ef-a83ab55b698c",
+    "runId": 1,
     "title": "Test Pipe",
     "context": "JUnit5 Tests",
     "transport": "payload",
@@ -19,60 +20,6 @@
           "config": {
             "catalogue": true,
             "address": "https://www.govdata.de/ckan/catalog/catalog.rdf",
-            "outputFormat": "TURTLE"
-          },
-          "nextEndpoint": {
-            "protocol": "http",
-            "address": "http://piveau-exporting-rdf/pipe",
-            "method": "POST"
-          }
-        }
-      },
-      {
-        "header": {
-          "id": "40330e5d-890a-497c-a34c-e7a6324118cd",
-          "segmentNumber": 2,
-          "title": "Exporting Catalogue",
-          "processed": false
-        },
-        "body": {
-          "nextEndpoint": {
-            "protocol": "http",
-            "address": "http://piveau-importing-rdf/pipe",
-            "method": "POST"
-          }
-        }
-      },
-      {
-        "header": {
-          "id": "40330e5d-890a-497c-a34c-e7a6324118cd",
-          "segmentNumber": 3,
-          "title": "Importing from GovData",
-          "processed": false
-        },
-        "body": {
-          "config": {
-            "catalogue": false,
-            "address": "https://www.govdata.de/ckan/catalog/catalog.rdf",
-            "outputFormat": "TURTLE"
-          },
-          "nextEndpoint": {
-            "protocol": "http",
-            "address": "http://piveau-exporting-rdf/pipe",
-            "method": "POST"
-          }
-        }
-      },
-      {
-        "header": {
-          "id": "40330e5d-890a-497c-a34c-e7a6324118cd",
-          "segmentNumber": 4,
-          "title": "Exporting Datasets",
-          "processed": false
-        },
-        "body": {
-          "config": {
-            "address": "https://europeandataportal.eu/",
             "outputFormat": "TURTLE"
           }
         }
