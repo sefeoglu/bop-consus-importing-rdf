@@ -47,7 +47,6 @@ public class ImportingVerticle extends AbstractVerticle {
             fetchPage(url, pipeContext);
         } else {
             pipeContext.setFailure("No source address provided.");
-            message.fail(1, "No source address provided.");
         }
 
     }
@@ -57,7 +56,7 @@ public class ImportingVerticle extends AbstractVerticle {
         client.getAbs(url).send(ar -> {
             if (ar.succeeded()) {
                 Model page = readPage(ar.result().bodyAsBuffer().getBytes());
-                pipeContext.log().debug("read page");
+                pipeContext.log().debug("page read");
 
                 ResIterator it = page.listResourcesWithProperty(RDF.type, DCAT.Dataset);
 
@@ -68,8 +67,8 @@ public class ImportingVerticle extends AbstractVerticle {
                         .map(JenaUtils::prettyPrint)
                         .subscribe(res -> pipeContext.setResult(res).forward(vertx));
 
-                Hydra hydra = Hydra.findPaging(page);
 
+                Hydra hydra = Hydra.findPaging(page);
                 if (hydra != null) {
                     pipeContext.setTotal(hydra.total());
                     String next = hydra.next();
@@ -85,7 +84,7 @@ public class ImportingVerticle extends AbstractVerticle {
 
                 page.close();
             } else {
-                pipeContext.log().error("Import finished with failure", ar.cause());
+                pipeContext.setFailure(ar.cause().getMessage());
             }
         });
     }
