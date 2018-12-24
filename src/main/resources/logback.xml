@@ -17,10 +17,10 @@
     <logger name="com.mchange.v2" level="warn"/>
     <logger name="io.netty" level="warn"/>
     <logger name="io.vertx" level="info"/>
-    <logger name="com.hazelcast" level="debug"/>
-    <logger name="io.piveau" level="debug"/>
+    <logger name="com.hazelcast" level="info"/>
+    <logger name="io.piveau" level="info"/>
 
-    <logger name="pipe" level="DEBUG">
+    <logger name="pipe" level="INFO">
         <appender-ref ref="PIPEFILE" />
     </logger>
 

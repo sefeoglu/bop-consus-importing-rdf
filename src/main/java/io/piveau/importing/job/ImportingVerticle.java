@@ -39,7 +39,7 @@ public class ImportingVerticle extends AbstractVerticle {
     private void handlePipe(Message<PipeContext> message) {
         PipeContext pipeContext = message.body();
 
-        pipeContext.log().info("pipe received");
+        pipeContext.log().info("Import started");
 
         JsonNode config = pipeContext.getConfig();
         if (config.path("address").isTextual()) {
@@ -76,7 +76,7 @@ public class ImportingVerticle extends AbstractVerticle {
                         log.info(next);
                         fetchPage(next, pipeContext);
                     } else {
-                        pipeContext.log().debug("No more pages.");
+                        pipeContext.log().info("Import finished");
                     }
                 } else {
                     pipeContext.log().debug("No paging info found.");
