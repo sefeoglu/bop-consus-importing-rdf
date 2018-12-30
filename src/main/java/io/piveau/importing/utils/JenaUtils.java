@@ -74,7 +74,7 @@ public class JenaUtils {
 
     public static String prettyPrint(Model model) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        RDFDataMgr.write(output, model, RDFFormat.TURTLE_BLOCKS);
+        RDFDataMgr.write(output, model, RDFFormat.RDFXML_ABBREV);
         return output.toString();
     }
 

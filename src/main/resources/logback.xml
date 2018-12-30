@@ -20,7 +20,7 @@
     <logger name="com.hazelcast" level="info"/>
     <logger name="io.piveau" level="info"/>
 
-    <logger name="pipe" level="INFO">
+    <logger name="pipe" level="${PIVEAU_PIPE_LOG_LEVEL:-INFO}">
         <appender-ref ref="PIPEFILE" />
     </logger>
 
