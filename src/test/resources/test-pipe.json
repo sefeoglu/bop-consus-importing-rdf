@@ -20,7 +20,7 @@
           "config": {
             "catalogue": true,
             "address": "https://www.govdata.de/ckan/catalog/catalog.rdf",
-            "outputFormat": "TURTLE"
+            "outputFormat": "RDF/XML-ABBREV"
           }
         }
       }

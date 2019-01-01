@@ -64,9 +64,8 @@ public class ImportingVerticle extends AbstractVerticle {
                 String outputFormat = config.path("outputFormat").textValue();
                 Flowable.fromIterable(it.toList())
                         .map(JenaUtils::extractResource)
-                        .map(JenaUtils::prettyPrint)
+                        .map(model -> JenaUtils.prettyPrint(model, outputFormat))
                         .subscribe(res -> pipeContext.setResult(res).forward(vertx));
-
 
                 Hydra hydra = Hydra.findPaging(page);
                 if (hydra != null) {

@@ -34,14 +34,18 @@ public class ImportingTest {
             JsonObject pipe = new JsonObject(pipeString);
             WebClient client = WebClient.create(vertx);
             client.post(8080, "localhost", "/pipe")
-                    .putHeader("content-type", "application/json")
-                    .sendJsonObject(pipe, response -> {
-                        if (response.succeeded()) {
-
+                .putHeader("content-type", "application/json")
+                .sendJsonObject(pipe, response -> {
+                    if (response.succeeded()) {
+                        if (response.result().statusCode() == 202) {
+//                            testContext.completeNow();
                         } else {
-
+                            testContext.failNow(new Throwable(response.result().statusMessage()));
                         }
-                    });
+                    } else {
+                        testContext.failNow(response.cause());
+                    }
+                });
         } catch (IOException e) {
             testContext.failNow(e);
         }

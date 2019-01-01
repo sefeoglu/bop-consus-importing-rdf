@@ -6,9 +6,17 @@
         </encoder>
     </appender>
 
-    <appender name="PIPEFILE" class="ch.qos.logback.core.FileAppender">
-        <file>${PIVEAU_PIPE_LOG_PATH:-logs/piveau-pipe.log}</file>
-        <append>true</append>
+    <appender name="PIPEFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${PIVEAU_PIPE_LOG_PATH:-logs/piveau-pipe.%d{yyyy-MM-dd}.log}</fileNamePattern>
+
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>10</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+
+        </rollingPolicy>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5level %logger %msg%n</pattern>
         </encoder>
@@ -24,7 +32,7 @@
         <appender-ref ref="PIPEFILE" />
     </logger>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="STDOUT"/>
     </root>
 

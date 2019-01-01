@@ -72,9 +72,10 @@ public class JenaUtils {
         return PrintUtil.print(d);
     }
 
-    public static String prettyPrint(Model model) {
+    public static String prettyPrint(Model model, String outputFormat) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        RDFDataMgr.write(output, model, RDFFormat.RDFXML_ABBREV);
+        model.write(output, outputFormat);
+//        RDFDataMgr.write(output, model, RDFFormat.RDFXML_ABBREV);
         return output.toString();
     }
 
