@@ -6,11 +6,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.piveau.importing.utils.Hydra;
 import io.piveau.importing.utils.JenaUtils;
 import io.piveau.pipe.connector.PipeContext;
-import io.reactivex.Flowable;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.Message;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
@@ -19,7 +17,6 @@ import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.shared.JenaException;
 import org.apache.jena.vocabulary.DCAT;
 import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
@@ -81,7 +78,7 @@ public class ImportingVerticle extends AbstractVerticle {
                                 .put("identifier", resource.toString());
                         pipeContext.setResult(pretty, null, dataInfo).forward(vertx);
                         pipeContext.log().info("Data imported: " + dataInfo.toString());
-                    } catch (JenaException e) {
+                    } catch (Exception e) {
                         pipeContext.log().warn("Could not import data for " + resource.toString() + " (" + counter.incrementAndGet() + "): " + e.getMessage());
                     }
                 }
