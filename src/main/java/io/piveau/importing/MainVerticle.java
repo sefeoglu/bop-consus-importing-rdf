@@ -16,7 +16,7 @@ public class MainVerticle extends AbstractVerticle {
             if (result.succeeded()) {
                 PipeConnector.create(vertx, cr -> {
                     if (cr.succeeded()) {
-                        cr.result().producer(vertx.eventBus().publisher(ImportingVerticle.ADDRESS));
+                        cr.result().consumerAddress(ImportingVerticle.ADDRESS);
                         startFuture.complete();
                     } else {
                         startFuture.fail(cr.cause());
