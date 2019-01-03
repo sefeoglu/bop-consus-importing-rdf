@@ -19,6 +19,7 @@ import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.shared.JenaException;
 import org.apache.jena.vocabulary.DCAT;
 import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
@@ -71,14 +72,18 @@ public class ImportingVerticle extends AbstractVerticle {
                 String outputFormat = config.path("outputFormat").textValue();
 
                 for (Resource resource : it.toList()) {
-                    Model model = JenaUtils.extractResource(resource);
-                    String pretty = JenaUtils.prettyPrint(model, outputFormat);
-                    ObjectNode dataInfo = new ObjectMapper().createObjectNode()
-                            .put("total", hydra.total())
-                            .put("counter", counter.incrementAndGet())
-                            .put("identifier", resource.toString());
-                    pipeContext.setResult(pretty, null, dataInfo).forward(vertx);
-                    pipeContext.log().info("Data imported: " + dataInfo.toString());
+                    try {
+                        Model model = JenaUtils.extractResource(resource);
+                        String pretty = JenaUtils.prettyPrint(model, outputFormat);
+                        ObjectNode dataInfo = new ObjectMapper().createObjectNode()
+                                .put("total", hydra.total())
+                                .put("counter", counter.incrementAndGet())
+                                .put("identifier", resource.toString());
+                        pipeContext.setResult(pretty, null, dataInfo).forward(vertx);
+                        pipeContext.log().info("Data imported: " + dataInfo.toString());
+                    } catch (JenaException e) {
+                        pipeContext.log().warn("Could not import data for " + resource.toString() + " (" + counter.incrementAndGet() + "): " + e.getMessage());
+                    }
                 }
 
                 if (hydra != null) {
