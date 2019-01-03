@@ -1,8 +1,6 @@
 package io.piveau.importing.utils;
 
 import org.apache.jena.rdf.model.*;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.util.PrintUtil;
 import org.apache.jena.vocabulary.*;
@@ -75,7 +73,6 @@ public class JenaUtils {
     public static String prettyPrint(Model model, String outputFormat) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         model.write(output, outputFormat);
-//        RDFDataMgr.write(output, model, RDFFormat.RDFXML_ABBREV);
         return output.toString();
     }
 
