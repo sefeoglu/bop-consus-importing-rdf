@@ -12,7 +12,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vertx.version>3.6.2</vertx.version>
-        <main.verticle>io.piveau.MainVerticle</main.verticle>
+        <main.verticle>io.piveau.importing.MainVerticle</main.verticle>
     </properties>
 
     <dependencyManagement>
