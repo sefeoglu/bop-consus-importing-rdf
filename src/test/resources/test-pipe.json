@@ -17,6 +17,10 @@
           "processed": false
         },
         "body": {
+          "endpoint": {
+            "address": "http://localhost:8080/pipe",
+            "method": "POST"
+          },
           "config": {
             "catalogue": true,
             "address": "https://www.govdata.de/ckan/catalog/catalog.rdf",

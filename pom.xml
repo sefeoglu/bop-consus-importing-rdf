@@ -12,7 +12,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vertx.version>3.6.2</vertx.version>
-        <main.verticle>io.piveau.importing.MainVerticle</main.verticle>
+        <main.verticle>io.piveau.MainVerticle</main.verticle>
     </properties>
 
     <dependencyManagement>
@@ -72,7 +72,7 @@
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>apache-jena-libs</artifactId>
-            <version>3.5.0</version>
+            <version>3.7.0</version>
             <type>pom</type>
         </dependency>
 

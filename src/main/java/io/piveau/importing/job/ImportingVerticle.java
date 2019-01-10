@@ -31,7 +31,7 @@ public class ImportingVerticle extends AbstractVerticle {
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    public static final String ADDRESS = "io.piveau.pipe.importing.queue";
+    public static final String ADDRESS = "io.piveau.pipe.importing.rdf.queue";
 
     @Override
     public void start(Future<Void> startFuture) {
@@ -55,6 +55,9 @@ public class ImportingVerticle extends AbstractVerticle {
     }
 
     private void fetchPage(String url, PipeContext pipeContext, AtomicInteger counter) {
+        JsonNode config = pipeContext.getConfig();
+        String outputFormat = config.path("outputFormat").textValue();
+
         WebClient client = WebClient.create(vertx);
         client.getAbs(url).send(ar -> {
             if (ar.succeeded()) {
@@ -64,9 +67,6 @@ public class ImportingVerticle extends AbstractVerticle {
                 Hydra hydra = Hydra.findPaging(page);
 
                 ResIterator it = page.listResourcesWithProperty(RDF.type, DCAT.Dataset);
-
-                JsonNode config = pipeContext.getConfig();
-                String outputFormat = config.path("outputFormat").textValue();
 
                 for (Resource resource : it.toList()) {
                     try {
