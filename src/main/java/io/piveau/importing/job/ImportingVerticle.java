@@ -56,7 +56,7 @@ public class ImportingVerticle extends AbstractVerticle {
 
     private void fetchPage(String url, PipeContext pipeContext, AtomicInteger counter) {
         JsonNode config = pipeContext.getConfig();
-        String outputFormat = config.path("outputFormat").textValue();
+        String outputFormat = config.path("outputFormat").asText("application/n-triples");
 
         WebClient client = WebClient.create(vertx);
         client.getAbs(url).send(ar -> {
