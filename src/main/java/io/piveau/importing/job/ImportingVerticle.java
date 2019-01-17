@@ -71,12 +71,13 @@ public class ImportingVerticle extends AbstractVerticle {
                 for (Resource resource : it.toList()) {
                     try {
                         Model model = JenaUtils.extractResource(resource);
+                        String identifier = JenaUtils.findIdentifier(resource);
                         String pretty = JenaUtils.prettyPrint(model, outputFormat);
                         ObjectNode dataInfo = new ObjectMapper().createObjectNode()
                                 .put("total", hydra.total())
                                 .put("counter", counter.incrementAndGet())
-                                .put("identifier", resource.toString());
-                        pipeContext.setResult(pretty, null, dataInfo).forward(vertx);
+                                .put("identifier", identifier);
+                        pipeContext.setResult(pretty, outputFormat, dataInfo).forward(vertx);
                         pipeContext.log().info("Data imported: " + dataInfo.toString());
                     } catch (Exception e) {
                         pipeContext.log().warn("Could not import data for " + resource.toString() + " (" + counter.incrementAndGet() + "): " + e.getMessage());

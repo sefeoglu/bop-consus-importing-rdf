@@ -1,12 +1,17 @@
 package io.piveau.importing.utils;
 
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.util.PrintUtil;
 import org.apache.jena.vocabulary.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,6 +69,21 @@ public class JenaUtils {
         }
     }
 
+    public static String findIdentifier(Resource resource) {
+        StmtIterator it = resource.listProperties(DCTerms.identifier);
+        if (it.hasNext()) {
+            return it.next().getString();
+        } else {
+            String uri = resource.getURI();
+            int idx = uri.lastIndexOf("/");
+            if (idx != -1) {
+                return uri.substring(idx + 1);
+            } else {
+                return uri;
+            }
+        }
+    }
+
     public static String print(Resource resource) {
         PrintUtil.registerPrefixMap(DCATAP_PREFIXES);
         Model d = extractor.extract(resource, resource.getModel());
@@ -71,8 +91,31 @@ public class JenaUtils {
     }
 
     public static String prettyPrint(Model model, String outputFormat) {
+        Lang format = Lang.RDFXML;
+        switch (outputFormat) {
+            case "application/rdf+xml":
+                format = Lang.RDFXML;
+                break;
+            case "application/ld+json":
+                format = Lang.JSONLD;
+                break;
+            case "text/turtle":
+                format = Lang.TURTLE;
+                break;
+            case "text/n3":
+                format = Lang.N3;
+                break;
+            case "application/trig":
+                format = Lang.TRIG;
+                break;
+            case "application/n-triples":
+                format = Lang.NTRIPLES;
+                break;
+            default:
+        }
+
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        model.write(output, outputFormat);
+        RDFDataMgr.write(output, model, format);
         return output.toString();
     }
 
