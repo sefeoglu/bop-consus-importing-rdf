@@ -74,7 +74,7 @@ public class ImportingVerticle extends AbstractVerticle {
                         String identifier = JenaUtils.findIdentifier(resource);
                         String pretty = JenaUtils.prettyPrint(model, outputFormat);
                         ObjectNode dataInfo = new ObjectMapper().createObjectNode()
-                                .put("total", hydra.total())
+                                .put("total", hydra != null ? hydra.total() : it.toList().size())
                                 .put("counter", counter.incrementAndGet())
                                 .put("identifier", identifier);
                         pipeContext.setResult(pretty, outputFormat, dataInfo).forward(vertx);
