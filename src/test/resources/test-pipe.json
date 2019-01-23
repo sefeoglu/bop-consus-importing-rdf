@@ -1,7 +1,6 @@
 {
   "header": {
     "id": "4ff7a0a7-2fc3-4e84-a6ef-a83ab55b698c",
-    "runId": 1,
     "title": "Test Pipe",
     "context": "JUnit5 Tests",
     "transport": "payload",
@@ -11,36 +10,33 @@
     "segments": [
       {
         "header": {
-          "id": "40330e5d-890a-497c-a34c-e7a6324118cd",
+          "name": "importing-rdf",
           "segmentNumber": 1,
-          "title": "Importing from GovData",
+          "title": "Importing RDF",
           "processed": false
         },
         "body": {
           "endpoint": {
-            "address": "http://localhost:8080/pipe",
-            "method": "POST"
+            "address": "http://localhost:8080/pipe"
           },
           "config": {
-            "catalogue": true,
-            "address": "https://www.govdata.de/ckan/catalog/catalog.rdf",
-            "outputFormat": "application/n-triples"
+            "address": "https://www.govdata.de/ckan/catalog/catalog.rdf"
           }
         }
       },
       {
         "header": {
-          "id": "50330e5d-890a-497c-a34c-e7a6324118cd",
+          "name": "exporting-rdf",
           "segmentNumber": 2,
           "title": "Exporting RDF",
           "processed": false
         },
         "body": {
           "endpoint": {
-            "address": "http://localhost:8090/pipe",
-            "method": "POST"
+            "address": "http://localhost:8090/pipe"
           },
           "config": {
+            "catalogue": "http://europeandataportal.eu/id/catalogue/test-catalogue",
             "address": "http://localhost:8890/sparql-graph-crud-auth",
             "username": "dba",
             "password": "dba"

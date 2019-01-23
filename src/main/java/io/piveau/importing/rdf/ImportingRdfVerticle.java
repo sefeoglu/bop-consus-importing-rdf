@@ -1,4 +1,4 @@
-package io.piveau.importing.job;
+package io.piveau.importing.rdf;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,9 +25,10 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ImportingVerticle extends AbstractVerticle {
+public class ImportingRdfVerticle extends AbstractVerticle {
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -68,13 +69,15 @@ public class ImportingVerticle extends AbstractVerticle {
 
                 ResIterator it = page.listResourcesWithProperty(RDF.type, DCAT.Dataset);
 
-                for (Resource resource : it.toList()) {
+                List<Resource> datasets = it.toList();
+                int size = datasets.size();
+                datasets.forEach(resource -> {
                     try {
                         Model model = JenaUtils.extractResource(resource);
                         String identifier = JenaUtils.findIdentifier(resource);
                         String pretty = JenaUtils.prettyPrint(model, outputFormat);
                         ObjectNode dataInfo = new ObjectMapper().createObjectNode()
-                                .put("total", hydra != null ? hydra.total() : it.toList().size())
+                                .put("total", hydra != null ? hydra.total() : size)
                                 .put("counter", counter.incrementAndGet())
                                 .put("identifier", identifier);
                         pipeContext.setResult(pretty, outputFormat, dataInfo).forward(vertx);
@@ -82,7 +85,7 @@ public class ImportingVerticle extends AbstractVerticle {
                     } catch (Exception e) {
                         pipeContext.log().warn("Could not import data for " + resource.toString() + " (" + counter.incrementAndGet() + "): " + e.getMessage());
                     }
-                }
+                });
 
                 if (hydra != null) {
                     String next = hydra.next();

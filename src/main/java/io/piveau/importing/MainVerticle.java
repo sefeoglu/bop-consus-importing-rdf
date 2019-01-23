@@ -1,6 +1,6 @@
 package io.piveau.importing;
 
-import io.piveau.importing.job.ImportingVerticle;
+import io.piveau.importing.rdf.ImportingRdfVerticle;
 import io.piveau.pipe.connector.PipeConnector;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
@@ -12,11 +12,11 @@ public class MainVerticle extends AbstractVerticle {
 
     @Override
     public void start(io.vertx.core.Future<Void> startFuture) {
-        vertx.deployVerticle(ImportingVerticle.class, new DeploymentOptions().setWorker(true), result -> {
+        vertx.deployVerticle(ImportingRdfVerticle.class, new DeploymentOptions().setWorker(true), result -> {
             if (result.succeeded()) {
                 PipeConnector.create(vertx, cr -> {
                     if (cr.succeeded()) {
-                        cr.result().consumerAddress(ImportingVerticle.ADDRESS);
+                        cr.result().consumerAddress(ImportingRdfVerticle.ADDRESS);
                         startFuture.complete();
                     } else {
                         startFuture.fail(cr.cause());
