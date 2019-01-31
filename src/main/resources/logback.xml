@@ -6,6 +6,11 @@
         </encoder>
     </appender>
 
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>${LOGSTASH_HOST:-logstash}${LOGSTASH_PORT:-5044}</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+    </appender>
+
     <appender name="PIPEFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <prudent>true</prudent>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -29,7 +34,7 @@
     <logger name="io.piveau" level="info"/>
 
     <logger name="pipe" level="${PIVEAU_PIPE_LOG_LEVEL:-INFO}">
-        <appender-ref ref="PIPEFILE" />
+        <appender-ref ref="${PIVEAU_PIPE_LOG_APPENDER:-PIPEFILE}" />
     </logger>
 
     <root level="info">
