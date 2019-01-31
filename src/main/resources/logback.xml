@@ -9,7 +9,6 @@
     <appender name="LOGSTASH" class="ch.qos.logback.classic.net.SocketAppender">
         <remoteHost>${LOGSTASH_HOST:-logstash}</remoteHost>
         <port>${LOGSTASH_PORT:-5046}</port>
-        <includeCallerData>true</includeCallerData>
     </appender>
 
     <logger name="com.mchange.v2" level="warn"/>
