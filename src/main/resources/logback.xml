@@ -10,9 +10,6 @@
         <remoteHost>${LOGSTASH_HOST:-logstash}</remoteHost>
         <port>${LOGSTASH_PORT:-5046}</port>
         <reconnectionDelay>10000</reconnectionDelay>
-        <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5level %logger %msg%n</pattern>
-        </encoder>
     </appender>
 
     <logger name="com.mchange.v2" level="warn"/>
