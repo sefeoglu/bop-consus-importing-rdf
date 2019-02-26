@@ -1,0 +1,71 @@
+{
+  "header": {
+    "context": "EDP2",
+    "transport": "payload",
+    "version": "1.0"
+  },
+  "body": {
+    "segments": [
+      {
+        "header": {
+          "name": "importing-ckan",
+          "segmentNumber": 1,
+          "title": "Importing ckan",
+          "processed": false
+        },
+        "body": {
+          "endpoint": {
+            "address": "http://piveau-importing-ckan:8080/pipe"
+          },
+          "config": {
+          }
+        }
+      },
+      {
+        "header": {
+          "name": "transforming-js",
+          "segmentNumber": 2,
+          "title": "Transforming js",
+          "processed": false
+        },
+        "body": {
+          "endpoint": {
+            "address": "http://piveau-transforming-js:8080/pipe"
+          },
+          "config": {
+            "single": true,
+            "scriptType": "repository",
+            "repository": {
+              "uri": "https://gitlab.com/european-data-portal/harvester/transformation-scripts.git",
+              "branch": "master",
+              "script": "js/data-gov-uk-to-dcat-ap.js",
+              "username": "gitlab+deploy-token-42775",
+              "token": "RzkM7iTjniXWQshrkGx6"
+            },
+            "params": {
+              "defaultLanguage": "en"
+            },
+            "outputFormat": "text/turtle"
+          }
+        }
+      },
+      {
+        "header": {
+          "name": "exporting-hub",
+          "segmentNumber": 3,
+          "title": "Exporting hub",
+          "processed": false
+        },
+        "body": {
+          "endpoint": {
+            "address": "http://piveau-exporting-hub:8080/pipe"
+          },
+          "config": {
+            "address": "http://odp-ckan01.ppe-aws.europeandataportal.eu:8080",
+            "apiKey": "db916db8-8aeb-4915-a3b9-f6b264b5d983"
+          }
+        }
+      }
+    ]
+  }
+}

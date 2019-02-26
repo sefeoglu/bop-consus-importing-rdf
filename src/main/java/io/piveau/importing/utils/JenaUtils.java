@@ -70,16 +70,20 @@ public class JenaUtils {
     }
 
     public static String findIdentifier(Resource resource) {
-        StmtIterator it = resource.listProperties(DCTerms.identifier);
-        if (it.hasNext()) {
-            return it.next().getString();
-        } else {
+        if (resource.isURIResource()) {
             String uri = resource.getURI();
             int idx = uri.lastIndexOf("/");
             if (idx != -1) {
                 return uri.substring(idx + 1);
             } else {
                 return uri;
+            }
+        } else {
+            StmtIterator it = resource.listProperties(DCTerms.identifier);
+            if (it.hasNext()) {
+                return it.next().getString();
+            } else {
+                return resource.getId().toString();
             }
         }
     }
