@@ -3,6 +3,7 @@ package io.piveau.importing.rdf;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.piveau.importing.utils.Hash;
 import io.piveau.importing.utils.Hydra;
 import io.piveau.importing.utils.JenaUtils;
 import io.piveau.pipe.connector.PipeContext;
@@ -79,7 +80,8 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                         ObjectNode dataInfo = new ObjectMapper().createObjectNode()
                                 .put("total", hydra != null ? hydra.total() : size)
                                 .put("counter", counter.incrementAndGet())
-                                .put("identifier", identifier);
+                                .put("identifier", identifier)
+                                .put("hash", Hash.asHexString(pretty));
                         pipeContext.setResult(pretty, outputFormat, dataInfo).forward(vertx);
                         pipeContext.log().info("Data imported: " + dataInfo.toString());
                     } catch (Exception e) {
