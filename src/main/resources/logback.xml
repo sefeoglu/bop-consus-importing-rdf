@@ -6,7 +6,7 @@
         </encoder>
     </appender>
 
-    <property name="pipeAppender" value="${PIVEAU_PIPE_LOG_APPENDER:-PIPEFILE}" />
+    <property name="pipeAppender" value="${PIVEAU_PIPE_LOG_APPENDER:-STDOUT}" />
 
     <if condition='property("pipeAppender").equals("LOGSTASH")'>
         <then>
@@ -40,7 +40,7 @@
     <logger name="com.hazelcast" level="debug"/>
     <logger name="io.piveau" level="debug"/>
 
-    <logger name="pipe" level="${PIVEAU_PIPE_LOG_LEVEL:-INFO}">
+    <logger name="pipe" level="${PIVEAU_PIPE_LOG_LEVEL:-INFO}" additivity="false">
         <appender-ref ref="${pipeAppender}" />
     </logger>
 

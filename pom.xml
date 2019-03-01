@@ -63,6 +63,13 @@
             <artifactId>rxjava</artifactId>
             <version>2.2.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.piveau</groupId>
+            <artifactId>piveau-utils</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <dependency>
             <groupId>io.piveau</groupId>
             <artifactId>pipe-connector</artifactId>
