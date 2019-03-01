@@ -1,18 +1,11 @@
 package io.piveau.importing;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.piveau.importing.utils.ADMS;
-import io.piveau.importing.utils.JenaUtils;
 import io.piveau.pipe.model.Pipe;
-import io.piveau.pipe.model.Segment;
-import io.piveau.pipe.utils.PipeFactory;
 import io.piveau.pipe.utils.PipeManager;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.file.AsyncFile;
-import io.vertx.core.file.OpenOptions;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
