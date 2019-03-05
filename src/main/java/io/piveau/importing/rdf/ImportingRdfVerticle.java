@@ -35,9 +35,13 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
     public static final String ADDRESS = "io.piveau.pipe.importing.rdf.queue";
 
+    private WebClient client;
+
     @Override
     public void start(Future<Void> startFuture) {
         vertx.eventBus().consumer(ADDRESS, this::handlePipe);
+        client = WebClient.create(vertx);
+
         startFuture.complete();
     }
 
@@ -60,7 +64,6 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         JsonNode config = pipeContext.getConfig();
         String outputFormat = config.path("outputFormat").asText("application/n-triples");
 
-        WebClient client = WebClient.create(vertx);
         client.getAbs(url).send(ar -> {
             if (ar.succeeded()) {
                 Model page = readPage(ar.result().bodyAsBuffer().getBytes());
@@ -82,7 +85,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                                 .put("counter", counter.incrementAndGet())
                                 .put("identifier", identifier)
                                 .put("hash", Hash.asHexString(pretty));
-                        pipeContext.setResult(pretty, outputFormat, dataInfo).forward(vertx);
+                        pipeContext.setResult(pretty, outputFormat, dataInfo).forward(client);
                         pipeContext.log().info("Data imported: " + dataInfo.toString());
                     } catch (Exception e) {
                         pipeContext.log().warn("Could not import data for " + resource.toString() + " (" + counter.incrementAndGet() + "): " + e.getMessage());
