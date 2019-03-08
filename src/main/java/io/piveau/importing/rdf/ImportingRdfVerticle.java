@@ -14,6 +14,7 @@ import io.vertx.ext.web.client.WebClient;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.Lang;
@@ -57,7 +58,6 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         } else {
             pipeContext.setFailure("No source address provided.");
         }
-
     }
 
     private void fetchPage(String url, PipeContext pipeContext, AtomicInteger counter) {
@@ -74,14 +74,13 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                 ResIterator it = page.listResourcesWithProperty(RDF.type, DCAT.Dataset);
 
                 List<Resource> datasets = it.toList();
-                int size = datasets.size();
                 datasets.forEach(resource -> {
                     try {
                         Model model = JenaUtils.extractResource(resource);
                         String identifier = JenaUtils.findIdentifier(resource);
                         String pretty = JenaUtils.prettyPrint(model, outputFormat);
                         ObjectNode dataInfo = new ObjectMapper().createObjectNode()
-                                .put("total", hydra != null ? hydra.total() : size)
+                                .put("total", hydra != null ? hydra.total() : datasets.size())
                                 .put("counter", counter.incrementAndGet())
                                 .put("identifier", identifier)
                                 .put("hash", Hash.asHexString(pretty));
@@ -114,17 +113,8 @@ public class ImportingRdfVerticle extends AbstractVerticle {
     private Model readPage(byte[] bytes) {
         InputStream stream = new ByteArrayInputStream(bytes);
 
-        Dataset dataset = DatasetFactory.create();
-        RDFDataMgr.read(dataset, stream, Lang.RDFXML);
-
-        Model model = dataset.getDefaultModel();
-        if (model.isEmpty()) {
-            Iterator<String> names = dataset.listNames();
-            if (names.hasNext()) {
-                model = dataset.getNamedModel(names.next());
-            }
-        }
-        dataset.close();
+        Model model = ModelFactory.createDefaultModel();
+        model.read(stream, null);
 
         return model;
     }
