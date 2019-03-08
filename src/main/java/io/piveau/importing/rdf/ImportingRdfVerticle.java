@@ -9,10 +9,10 @@ import io.piveau.utils.Hydra;
 import io.piveau.utils.JenaUtils;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
+import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
-import org.apache.jena.query.Dataset;
-import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResIterator;
@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -66,7 +65,8 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
         client.getAbs(url).send(ar -> {
             if (ar.succeeded()) {
-                Model page = readPage(ar.result().bodyAsBuffer().getBytes());
+                HttpResponse<Buffer> response = ar.result();
+                Model page = readPage(response.bodyAsBuffer().getBytes(), response.getHeader("Content-Type"));
                 pipeContext.log().debug("Page read");
 
                 Hydra hydra = Hydra.findPaging(page);
@@ -110,11 +110,11 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         });
     }
 
-    private Model readPage(byte[] bytes) {
+    private Model readPage(byte[] bytes, String contentType) {
         InputStream stream = new ByteArrayInputStream(bytes);
 
         Model model = ModelFactory.createDefaultModel();
-        model.read(stream, null);
+        RDFDataMgr.read(model, stream, null, JenaUtils.mimeTypeToLang(contentType));
 
         return model;
     }

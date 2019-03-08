@@ -20,7 +20,7 @@
             "address": "http://localhost:8080/pipe"
           },
           "config": {
-            "address": "https://www.govdata.de/ckan/catalog/catalog.rdf"
+            "address": "https://opendata.riik.ee/data.json"
           }
         }
       },
