@@ -20,4 +20,4 @@ USER vertx
 # Launch the verticle
 WORKDIR $VERTICLE_HOME
 ENTRYPOINT ["sh", "-c"]
-CMD ["exec java -jar $VERTICLE_FILE"]
+CMD ["exec java $JAVA_OPTS -jar $VERTICLE_FILE"]
