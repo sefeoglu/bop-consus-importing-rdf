@@ -147,7 +147,7 @@ public class ImportingTest {
                 default:
             }
 
-            fileContent.append("PUT http://odp-ckan01.ppe-aws.europeandataportal.eu:8082/catalogs/");
+            fileContent.append("PUT http://odp-ckan01.ppe-aws.europeandataportal.eu:8082/catalogues/");
             fileContent.append(name);
             fileContent.append("\nContent-Type: application/rdf+xml\n");
             fileContent.append("Authorization: db916db8-8aeb-4915-a3b9-f6b264b5d983\n\n");

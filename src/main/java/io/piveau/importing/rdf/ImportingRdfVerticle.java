@@ -11,13 +11,13 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonArray;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.DCAT;
 import org.apache.jena.vocabulary.RDF;
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ImportingRdfVerticle extends AbstractVerticle {
@@ -47,31 +47,30 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
     private void handlePipe(Message<PipeContext> message) {
         PipeContext pipeContext = message.body();
-
-        pipeContext.log().info("Import started");
-
         JsonNode config = pipeContext.getConfig();
-        if (config.path("address").isTextual()) {
-            String url = config.get("address").textValue();
-            fetchPage(url, pipeContext, new AtomicInteger());
+        String mode = config.path("mode").asText("metadata");
+        pipeContext.log().info("Import started. Mode '{}'", mode);
+
+        String address = config.path("address").asText();
+        if (mode.equals("identifiers")) {
+            fetchIdentifiers(address, pipeContext, new HashSet<>());
         } else {
-            pipeContext.setFailure("No source address provided.");
+            fetchPage(address, pipeContext, new AtomicInteger());
         }
     }
 
-    private void fetchPage(String url, PipeContext pipeContext, AtomicInteger counter) {
+    private void fetchPage(String address, PipeContext pipeContext, AtomicInteger counter) {
         JsonNode config = pipeContext.getConfig();
         String outputFormat = config.path("outputFormat").asText("application/n-triples");
 
-        client.getAbs(url).send(ar -> {
+        client.getAbs(address).send(ar -> {
             if (ar.succeeded()) {
                 HttpResponse<Buffer> response = ar.result();
                 Model page = readPage(response.bodyAsBuffer().getBytes(), response.getHeader("Content-Type"));
-                pipeContext.log().debug("Page read");
-
-                Hydra hydra = Hydra.findPaging(page);
 
                 ResIterator it = page.listResourcesWithProperty(RDF.type, DCAT.Dataset);
+
+                Hydra hydra = Hydra.findPaging(page);
 
                 List<Resource> datasets = it.toList();
                 datasets.forEach(resource -> {
@@ -85,27 +84,22 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                                 .put("identifier", identifier)
                                 .put("hash", Hash.asHexString(pretty));
                         pipeContext.setResult(pretty, outputFormat, dataInfo).forward(client);
-                        pipeContext.log().info("Data imported: " + dataInfo.toString());
+                        pipeContext.log().info("Data imported: {}", dataInfo);
                     } catch (Exception e) {
-                        pipeContext.log().warn("Could not import data for " + resource.toString() + " (" + counter.incrementAndGet() + "): " + e.getMessage());
+                        pipeContext.log().warn(resource.toString(), e);
                     }
                 });
 
-                if (hydra != null) {
-                    String next = hydra.next();
-                    if (next != null) {
-                        log.info(next);
-                        fetchPage(next, pipeContext, counter);
-                    } else {
-                        pipeContext.log().info("Import finished");
-                    }
+                String next = hydra.next();
+                if (next != null) {
+                    fetchPage(next, pipeContext, counter);
                 } else {
-                    pipeContext.log().debug("No paging info found.");
+                    pipeContext.log().info("Import metadata finished");
                 }
 
                 page.close();
             } else {
-                pipeContext.setFailure(ar.cause().getMessage());
+                pipeContext.setFailure(ar.cause());
             }
         });
     }
@@ -117,6 +111,33 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         RDFDataMgr.read(model, stream, null, JenaUtils.mimeTypeToLang(contentType));
 
         return model;
+    }
+
+    private void fetchIdentifiers(String address, PipeContext pipeContext, Set<String> identifiers) {
+        client.getAbs(address).send(ar -> {
+            if (ar.succeeded()) {
+                HttpResponse<Buffer> response = ar.result();
+                Model page = readPage(response.bodyAsBuffer().getBytes(), response.getHeader("Content-Type"));
+
+                List<Resource> datasets = page.listResourcesWithProperty(RDF.type, DCAT.Dataset).toList();
+                datasets.forEach(resource -> {
+                    String identifier = JenaUtils.findIdentifier(resource);
+                    identifiers.add(identifier);
+                });
+
+                String next = Hydra.findPaging(page).next();
+                if (next != null) {
+                    fetchIdentifiers(next, pipeContext, identifiers);
+                } else {
+                    pipeContext.setResult(new JsonArray(new ArrayList<>(identifiers)).encodePrettily(), "application/json").forward(client);
+                    pipeContext.log().info("Import identifiers finished");
+                }
+
+                page.close();
+            } else {
+                pipeContext.setFailure(ar.cause());
+            }
+        });
     }
 
 }
