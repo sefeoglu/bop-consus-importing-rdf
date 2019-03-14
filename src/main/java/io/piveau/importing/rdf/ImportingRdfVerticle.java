@@ -21,8 +21,6 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.DCAT;
 import org.apache.jena.vocabulary.RDF;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -30,8 +28,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ImportingRdfVerticle extends AbstractVerticle {
-
-    private Logger log = LoggerFactory.getLogger(getClass());
 
     public static final String ADDRESS = "io.piveau.pipe.importing.rdf.queue";
 
@@ -47,6 +43,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
     private void handlePipe(Message<PipeContext> message) {
         PipeContext pipeContext = message.body();
+
         JsonNode config = pipeContext.getConfig();
         String mode = config.path("mode").asText("metadata");
         pipeContext.log().info("Import started. Mode '{}'", mode);
@@ -79,7 +76,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                         String identifier = JenaUtils.findIdentifier(resource);
                         String pretty = JenaUtils.prettyPrint(model, outputFormat);
                         ObjectNode dataInfo = new ObjectMapper().createObjectNode()
-                                .put("total", hydra != null ? hydra.total() : datasets.size())
+                                .put("total", hydra.total() != 0 ? hydra.total() : datasets.size())
                                 .put("counter", counter.incrementAndGet())
                                 .put("identifier", identifier)
                                 .put("hash", Hash.asHexString(pretty));

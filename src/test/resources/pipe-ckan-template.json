@@ -37,15 +37,13 @@
             "scriptType": "repository",
             "repository": {
               "uri": "https://gitlab.com/european-data-portal/harvester/transformation-scripts.git",
-              "branch": "master",
               "script": "js/data-gov-uk-to-dcat-ap.js",
               "username": "gitlab+deploy-token-42775",
               "token": "RzkM7iTjniXWQshrkGx6"
             },
             "params": {
               "defaultLanguage": "en"
-            },
-            "outputFormat": "text/turtle"
+            }
           }
         }
       },
