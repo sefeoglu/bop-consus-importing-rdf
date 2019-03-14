@@ -8,6 +8,8 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.client.HttpRequest;
+import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.Timeout;
 import io.vertx.junit5.VertxExtension;
@@ -26,7 +28,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -87,7 +93,7 @@ public class ImportingTest {
         JsonArray all = repos.getJsonArray("result");
 
         all.iterator().forEachRemaining(obj -> {
-            JsonObject repo = (JsonObject)obj;
+            JsonObject repo = (JsonObject) obj;
             String type = repo.getString("type");
             String name = repo.getString("name").toLowerCase().replace(" ", "-");
             name = name.replaceAll("[^\\w\\s]", "-");
@@ -112,7 +118,7 @@ public class ImportingTest {
             while (it.hasNext()) {
                 Resource mappedCode = it.next();
                 if (mappedCode.hasLiteral(DC_11.source, "iso-639-1")) {
-                    ResIterator concepts = languages.listSubjectsWithProperty(languages.createProperty("http://publications.europa.eu/ontology/authority/op-mapped-code") , mappedCode);
+                    ResIterator concepts = languages.listSubjectsWithProperty(languages.createProperty("http://publications.europa.eu/ontology/authority/op-mapped-code"), mappedCode);
                     if (concepts.hasNext()) {
                         catalogue.addProperty(DCTerms.language, concepts.next());
                         break;
@@ -180,7 +186,7 @@ public class ImportingTest {
             config.put("outputFormat", "application/n-triples");
             pipe.getBody().getSegments().get(0).getBody().setConfig(config);
 
-            ObjectNode config2 = (ObjectNode)pipe.getBody().getSegments().get(1).getBody().getConfig();
+            ObjectNode config2 = (ObjectNode) pipe.getBody().getSegments().get(1).getBody().getConfig();
             config2.put("catalogue", shortName);
 
             String filename = "src/test/resources/pipes/pipe-" + shortName + ".json";
@@ -206,13 +212,13 @@ public class ImportingTest {
             config.put("address", sourceUri);
             pipe.getBody().getSegments().get(0).getBody().setConfig(config);
 
-            ObjectNode transConfig = (ObjectNode)pipe.getBody().getSegments().get(1).getBody().getConfig();
-            ObjectNode repository = (ObjectNode)transConfig.path("repository");
+            ObjectNode transConfig = (ObjectNode) pipe.getBody().getSegments().get(1).getBody().getConfig();
+            ObjectNode repository = (ObjectNode) transConfig.path("repository");
             repository.put("script", "js/" + name + "-to-dcat-ap.js");
-            ObjectNode params = (ObjectNode)transConfig.path("params");
+            ObjectNode params = (ObjectNode) transConfig.path("params");
             params.put("defaultLanguage", repo.getString("language"));
 
-            ObjectNode config2 = (ObjectNode)pipe.getBody().getSegments().get(2).getBody().getConfig();
+            ObjectNode config2 = (ObjectNode) pipe.getBody().getSegments().get(2).getBody().getConfig();
             config2.put("catalogue", name);
 
             String filename = "src/test/resources/pipes/pipe-" + name + ".json";
@@ -221,6 +227,47 @@ public class ImportingTest {
 
         }
 
+    }
+
+    @Test
+    @DisplayName("generate trigger from old harvester")
+    void generateTriggers(Vertx vertx, VertxTestContext testContext) {
+        WebClient client = WebClient.create(vertx);
+        JsonObject triggers = new JsonObject();
+        HttpRequest<Buffer> request = client.getAbs("https://www.europeandataportal.eu/MetadataTransformerService/rest/harvester");
+        request.send(ar -> {
+            if (ar.succeeded()) {
+                HttpResponse<Buffer> response = ar.result();
+                JsonObject result = response.bodyAsJsonObject();
+                if (result.getBoolean("success")) {
+                    JsonArray harvesters = result.getJsonArray("result");
+                    harvesters.forEach(obj -> {
+                        JsonObject harvester = (JsonObject) obj;
+                        String frequency = harvester.getString("frequency", "manually");
+                        if (!frequency.equals("manually")) {
+                            Date scheduled = new Date(harvester.getLong("scheduled"));
+                            JsonArray tmp = new JsonArray();
+                            JsonObject metadata = new JsonObject().put("id", "metadata")
+                                    .put("status", "enabled")
+                                    .put("interval", new JsonObject().put("unit", frequency.toUpperCase()).put("value", 1))
+                                    .put("next", scheduled.toInstant().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+                            JsonObject identifiers = new JsonObject().put("id", "identifiers")
+                                    .put("status", "enabled")
+                                    .put("interval", new JsonObject().put("unit", frequency.toUpperCase()).put("value", 1))
+                                    .put("next", scheduled.toInstant().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                                    .put("config", new JsonObject().put("mode", "identifiers"));
+                            tmp.add(metadata);
+                            tmp.add(identifiers);
+                            triggers.put(harvester.getString("name").replace(" to EDP", ""), tmp);
+                        }
+                    });
+                    vertx.fileSystem().writeFileBlocking("src/test/resources/triggers.json", Buffer.buffer(triggers.encodePrettily()));
+                }
+                testContext.completeNow();
+            } else {
+                testContext.failNow(ar.cause());
+            }
+        });
     }
 
 }
