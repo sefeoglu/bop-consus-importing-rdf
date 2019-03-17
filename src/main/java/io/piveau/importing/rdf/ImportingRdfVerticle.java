@@ -63,7 +63,8 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         client.getAbs(address).send(ar -> {
             if (ar.succeeded()) {
                 HttpResponse<Buffer> response = ar.result();
-                Model page = readPage(response.bodyAsBuffer().getBytes(), response.getHeader("Content-Type"));
+                String inputFormat = config.path("inputFormat").asText(response.getHeader("Content-Type"));
+                Model page = JenaUtils.read(response.bodyAsBuffer().getBytes(), inputFormat);
 
                 ResIterator it = page.listResourcesWithProperty(RDF.type, DCAT.Dataset);
 
@@ -101,20 +102,11 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         });
     }
 
-    private Model readPage(byte[] bytes, String contentType) {
-        InputStream stream = new ByteArrayInputStream(bytes);
-
-        Model model = ModelFactory.createDefaultModel();
-        RDFDataMgr.read(model, stream, null, JenaUtils.mimeTypeToLang(contentType));
-
-        return model;
-    }
-
     private void fetchIdentifiers(String address, PipeContext pipeContext, Set<String> identifiers) {
         client.getAbs(address).send(ar -> {
             if (ar.succeeded()) {
                 HttpResponse<Buffer> response = ar.result();
-                Model page = readPage(response.bodyAsBuffer().getBytes(), response.getHeader("Content-Type"));
+                Model page = JenaUtils.read(response.bodyAsBuffer().getBytes(), response.getHeader("Content-Type"));
 
                 List<Resource> datasets = page.listResourcesWithProperty(RDF.type, DCAT.Dataset).toList();
                 datasets.forEach(resource -> {

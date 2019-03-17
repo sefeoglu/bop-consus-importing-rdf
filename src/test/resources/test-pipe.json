@@ -20,26 +20,7 @@
             "address": "http://localhost:8080/pipe"
           },
           "config": {
-            "address": "https://opendata.riik.ee/data.json"
-          }
-        }
-      },
-      {
-        "header": {
-          "name": "exporting-rdf",
-          "segmentNumber": 2,
-          "title": "Exporting RDF",
-          "processed": false
-        },
-        "body": {
-          "endpoint": {
-            "address": "http://localhost:8090/pipe"
-          },
-          "config": {
-            "catalogue": "http://europeandataportal.eu/id/catalogue/test-catalogue",
-            "address": "http://localhost:8890/sparql-graph-crud-auth",
-            "username": "dba",
-            "password": "dba"
+            "address": "https://www.govdata.de/ckan/catalog/catalog.rdf"
           }
         }
       }
