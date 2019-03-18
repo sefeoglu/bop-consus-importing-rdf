@@ -58,7 +58,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
     private void fetchPage(String address, PipeContext pipeContext, AtomicInteger counter) {
         JsonNode config = pipeContext.getConfig();
-        String outputFormat = config.path("outputFormat").asText("application/n-triples");
+        String outputFormat = config.path("outputFormat").asText("text/turtle");
 
         client.getAbs(address).send(ar -> {
             if (ar.succeeded()) {
