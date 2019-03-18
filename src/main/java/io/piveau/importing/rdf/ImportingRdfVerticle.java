@@ -75,7 +75,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                     try {
                         Model model = JenaUtils.extractResource(resource);
                         String identifier = JenaUtils.findIdentifier(resource);
-                        String pretty = JenaUtils.prettyPrint(model, outputFormat);
+                        String pretty = JenaUtils.write(model, outputFormat);
                         ObjectNode dataInfo = new ObjectMapper().createObjectNode()
                                 .put("total", hydra.total() != 0 ? hydra.total() : datasets.size())
                                 .put("counter", counter.incrementAndGet())
