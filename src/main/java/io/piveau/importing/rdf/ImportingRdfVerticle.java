@@ -15,15 +15,11 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.DCAT;
 import org.apache.jena.vocabulary.RDF;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -64,7 +60,13 @@ public class ImportingRdfVerticle extends AbstractVerticle {
             if (ar.succeeded()) {
                 HttpResponse<Buffer> response = ar.result();
                 String inputFormat = config.path("inputFormat").asText(response.getHeader("Content-Type"));
-                Model page = JenaUtils.read(response.bodyAsBuffer().getBytes(), inputFormat);
+                Model page;
+                try {
+                    page = JenaUtils.read(response.bodyAsBuffer().getBytes(), inputFormat);
+                } catch (Exception e) {
+                    pipeContext.setFailure(e);
+                    return;
+                }
 
                 ResIterator it = page.listResourcesWithProperty(RDF.type, DCAT.Dataset);
 
