@@ -21,7 +21,6 @@ import org.apache.jena.vocabulary.DCAT;
 import org.apache.jena.vocabulary.RDF;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ImportingRdfVerticle extends AbstractVerticle {
 
@@ -48,11 +47,11 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         if (mode.equals("identifiers")) {
             fetchIdentifiers(address, pipeContext, new HashSet<>());
         } else {
-            fetchPage(address, pipeContext, new AtomicInteger());
+            fetchPage(address, pipeContext, new ArrayList<>());
         }
     }
 
-    private void fetchPage(String address, PipeContext pipeContext, AtomicInteger counter) {
+    private void fetchPage(String address, PipeContext pipeContext, List<String> identifiers) {
         JsonNode config = pipeContext.getConfig();
         String outputFormat = config.path("outputFormat").asText("text/turtle");
 
@@ -77,10 +76,11 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                     try {
                         Model model = JenaUtils.extractResource(resource);
                         String identifier = JenaUtils.findIdentifier(resource);
+                        identifiers.add(identifier);
                         String pretty = JenaUtils.write(model, outputFormat);
                         ObjectNode dataInfo = new ObjectMapper().createObjectNode()
                                 .put("total", hydra.total() != 0 ? hydra.total() : datasets.size())
-                                .put("counter", counter.incrementAndGet())
+                                .put("counter", identifiers.size())
                                 .put("identifier", identifier)
                                 .put("hash", Hash.asHexString(pretty));
                         pipeContext.setResult(pretty, outputFormat, dataInfo).forward(client);
@@ -92,9 +92,10 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
                 String next = hydra.next();
                 if (next != null) {
-                    fetchPage(next, pipeContext, counter);
+                    fetchPage(next, pipeContext, identifiers);
                 } else {
                     pipeContext.log().info("Import metadata finished");
+                    pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", new ObjectMapper().createObjectNode().put("content", "identifierList")).forward(client);
                 }
 
                 page.close();
