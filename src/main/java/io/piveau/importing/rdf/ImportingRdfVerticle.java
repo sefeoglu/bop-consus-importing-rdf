@@ -20,6 +20,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCAT;
 import org.apache.jena.vocabulary.RDF;
 
+import java.net.URL;
 import java.util.*;
 
 public class ImportingRdfVerticle extends AbstractVerticle {
@@ -69,7 +70,8 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
                 ResIterator it = page.listResourcesWithProperty(RDF.type, DCAT.Dataset);
 
-                Hydra hydra = Hydra.findPaging(page);
+                boolean brokenHydra = config.path("brokenHydra").asBoolean(false);
+                Hydra hydra = Hydra.findPaging(page, brokenHydra ? address : null);
 
                 List<Resource> datasets = it.toList();
                 datasets.forEach(resource -> {
@@ -117,7 +119,8 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                     identifiers.add(identifier);
                 });
 
-                String next = Hydra.findPaging(page).next();
+                boolean brokenHydra = pipeContext.getConfig().path("brokenHydra").asBoolean(false);
+                String next = Hydra.findPaging(page, brokenHydra ? address : null).next();
                 if (next != null) {
                     fetchIdentifiers(next, pipeContext, identifiers);
                 } else {
