@@ -97,7 +97,9 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                     fetchPage(next, pipeContext, identifiers);
                 } else {
                     pipeContext.log().info("Import metadata finished");
-                    pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", new ObjectMapper().createObjectNode().put("content", "identifierList")).forward(client);
+                    vertx.setTimer(5000, t -> {
+                        pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", new ObjectMapper().createObjectNode().put("content", "identifierList")).forward(client);
+                    });
                 }
 
                 page.close();
