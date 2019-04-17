@@ -20,7 +20,8 @@
             "address": "http://localhost:8080/pipe"
           },
           "config": {
-            "address": "https://www.govdata.de/ckan/catalog/catalog.rdf"
+            "address": "http://data.gov.ro/catalog.rdf",
+            "iriRules": "lax"
           }
         }
       }
