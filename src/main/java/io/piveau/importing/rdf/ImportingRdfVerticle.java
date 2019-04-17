@@ -20,7 +20,6 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCAT;
 import org.apache.jena.vocabulary.RDF;
 
-import java.net.URL;
 import java.util.*;
 
 public class ImportingRdfVerticle extends AbstractVerticle {
