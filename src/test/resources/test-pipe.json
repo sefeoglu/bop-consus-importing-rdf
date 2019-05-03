@@ -20,8 +20,8 @@
             "address": "http://localhost:8080/pipe"
           },
           "config": {
-            "address": "http://data.gov.ro/catalog.rdf",
-            "iriRules": "lax"
+            "address": "http://ondemand2.redes.ondemand.flumotion.com/redes/ondemand2/Datosabiertos/datosgobes.rdf",
+            "inputFormat": "application/rdf+xml"
           }
         }
       }
