@@ -55,6 +55,9 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         JsonNode config = pipeContext.getConfig();
         String outputFormat = config.path("outputFormat").asText("text/turtle");
 
+        boolean removePrefix = config.path("removePrefix").asBoolean(false);
+        boolean precedenceUriRef = config.path("precedenceUriRef").asBoolean(false);
+
         client.getAbs(address).send(ar -> {
             if (ar.succeeded()) {
                 HttpResponse<Buffer> response = ar.result();
@@ -76,16 +79,20 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                 datasets.forEach(resource -> {
                     try {
                         Model model = JenaUtils.extractResource(resource);
-                        String identifier = JenaUtils.findIdentifier(resource);
-                        identifiers.add(identifier);
-                        String pretty = JenaUtils.write(model, outputFormat);
-                        ObjectNode dataInfo = new ObjectMapper().createObjectNode()
-                                .put("total", hydra.total() != 0 ? hydra.total() : datasets.size())
-                                .put("counter", identifiers.size())
-                                .put("identifier", identifier)
-                                .put("hash", Hash.asHexString(pretty));
-                        pipeContext.setResult(pretty, outputFormat, dataInfo).forward(client);
-                        pipeContext.log().info("Data imported: {}", dataInfo);
+                        String identifier = JenaUtils.findIdentifier(resource, removePrefix, precedenceUriRef);
+                        if (identifier == null) {
+                            pipeContext.log().warn("Could not extract an identifier from {}", resource.toString());
+                        } else {
+                            identifiers.add(identifier);
+                            String pretty = JenaUtils.write(model, outputFormat);
+                            ObjectNode dataInfo = new ObjectMapper().createObjectNode()
+                                    .put("total", hydra.total() != 0 ? hydra.total() : datasets.size())
+                                    .put("counter", identifiers.size())
+                                    .put("identifier", identifier)
+                                    .put("hash", Hash.asHexString(pretty));
+                            pipeContext.setResult(pretty, outputFormat, dataInfo).forward(client);
+                            pipeContext.log().info("Data imported: {}", dataInfo);
+                        }
                     } catch (Exception e) {
                         pipeContext.log().warn(resource.toString(), e);
                     }
