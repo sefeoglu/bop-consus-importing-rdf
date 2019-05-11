@@ -40,15 +40,10 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         PipeContext pipeContext = message.body();
 
         JsonNode config = pipeContext.getConfig();
-        String mode = config.path("mode").asText("metadata");
-        pipeContext.log().info("Import started. Mode '{}'", mode);
+        pipeContext.log().info("Import started.");
 
         String address = config.path("address").asText();
-        if (mode.equals("identifiers")) {
-            fetchIdentifiers(address, pipeContext, new HashSet<>());
-        } else {
-            fetchPage(address, pipeContext, new ArrayList<>());
-        }
+        fetchPage(address, pipeContext, new ArrayList<>());
     }
 
     private void fetchPage(String address, PipeContext pipeContext, List<String> identifiers) {
@@ -106,34 +101,6 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                     vertx.setTimer(5000, t -> {
                         pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", new ObjectMapper().createObjectNode().put("content", "identifierList")).forward(client);
                     });
-                }
-
-                page.close();
-            } else {
-                pipeContext.setFailure(ar.cause());
-            }
-        });
-    }
-
-    private void fetchIdentifiers(String address, PipeContext pipeContext, Set<String> identifiers) {
-        client.getAbs(address).send(ar -> {
-            if (ar.succeeded()) {
-                HttpResponse<Buffer> response = ar.result();
-                Model page = JenaUtils.read(response.bodyAsBuffer().getBytes(), response.getHeader("Content-Type"));
-
-                List<Resource> datasets = page.listResourcesWithProperty(RDF.type, DCAT.Dataset).toList();
-                datasets.forEach(resource -> {
-                    String identifier = JenaUtils.findIdentifier(resource);
-                    identifiers.add(identifier);
-                });
-
-                boolean brokenHydra = pipeContext.getConfig().path("brokenHydra").asBoolean(false);
-                String next = Hydra.findPaging(page, brokenHydra ? address : null).next();
-                if (next != null) {
-                    fetchIdentifiers(next, pipeContext, identifiers);
-                } else {
-                    pipeContext.setResult(new JsonArray(new ArrayList<>(identifiers)).encodePrettily(), "application/json").forward(client);
-                    pipeContext.log().info("Import identifiers finished");
                 }
 
                 page.close();
