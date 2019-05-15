@@ -7,11 +7,15 @@ import io.piveau.pipe.connector.PipeContext;
 import io.piveau.utils.Hash;
 import io.piveau.utils.Hydra;
 import io.piveau.utils.JenaUtils;
+import io.vertx.config.ConfigRetriever;
+import io.vertx.config.ConfigRetrieverOptions;
+import io.vertx.config.ConfigStoreOptions;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import org.apache.jena.rdf.model.Model;
@@ -28,12 +32,25 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
     private WebClient client;
 
+    private int defaultDelay;
+
     @Override
     public void start(Future<Void> startFuture) {
         vertx.eventBus().consumer(ADDRESS, this::handlePipe);
         client = WebClient.create(vertx);
 
-        startFuture.complete();
+        ConfigStoreOptions envStoreOptions = new ConfigStoreOptions()
+                .setType("env")
+                .setConfig(new JsonObject().put("keys", new JsonArray().add("PIVEAU_IMPORTING_SEND_LIST_DELAY")));
+        ConfigRetriever retriever = ConfigRetriever.create(vertx, new ConfigRetrieverOptions().addStore(envStoreOptions));
+        retriever.getConfig(ar -> {
+            if (ar.succeeded()) {
+                defaultDelay = ar.result().getInteger("PIVEAU_IMPORTING_SEND_LIST_DELAY", 8000);
+                startFuture.complete();
+            } else {
+                startFuture.fail(ar.cause());
+            }
+        });
     }
 
     private void handlePipe(Message<PipeContext> message) {
@@ -48,7 +65,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
     private void fetchPage(String address, PipeContext pipeContext, List<String> identifiers) {
         JsonNode config = pipeContext.getConfig();
-        String outputFormat = config.path("outputFormat").asText("text/turtle");
+        String outputFormat = config.path("outputFormat").asText("application/n-triples");
 
         boolean removePrefix = config.path("removePrefix").asBoolean(false);
         boolean precedenceUriRef = config.path("precedenceUriRef").asBoolean(false);
@@ -84,6 +101,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                                     .put("total", hydra.total() != 0 ? hydra.total() : datasets.size())
                                     .put("counter", identifiers.size())
                                     .put("identifier", identifier)
+                                    .put("catalogue", config.path("catalogue").asText())
                                     .put("hash", Hash.asHexString(pretty));
                             pipeContext.setResult(pretty, outputFormat, dataInfo).forward(client);
                             pipeContext.log().info("Data imported: {}", dataInfo);
@@ -98,8 +116,12 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                     fetchPage(next, pipeContext, identifiers);
                 } else {
                     pipeContext.log().info("Import metadata finished");
-                    vertx.setTimer(5000, t -> {
-                        pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", new ObjectMapper().createObjectNode().put("content", "identifierList")).forward(client);
+                    int delay = pipeContext.getConfig().path("sendListDelay").asInt(defaultDelay);
+                    vertx.setTimer(delay, t -> {
+                        ObjectNode info = new ObjectMapper().createObjectNode()
+                                .put("content", "identifierList")
+                                .put("catalogue", config.path("catalogue").asText());
+                        pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", info).forward(client);
                     });
                 }
 

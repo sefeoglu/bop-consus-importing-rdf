@@ -3,10 +3,16 @@
 ## Unreleased
 
 **Added:**
+* `catalogue` read from configuration and pass it to the info object
+* Environment `PIVEAU_IMPORTING_SEND_LIST_DELAY` for a configurable delay
+* `sendListData` pipe configuration option
 
 **Changed:**
+* Readme
+* Default output format to `application/n-triples`
 
 **Removed:**
+* `mode` configuration and fetchIdentifier
 
 **Fixed:**
 
