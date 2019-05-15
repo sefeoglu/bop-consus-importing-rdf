@@ -21,12 +21,17 @@ import io.vertx.ext.web.client.WebClient;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.riot.Lang;
 import org.apache.jena.vocabulary.DCAT;
 import org.apache.jena.vocabulary.RDF;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class ImportingRdfVerticle extends AbstractVerticle {
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public static final String ADDRESS = "io.piveau.pipe.importing.rdf.queue";
 
@@ -81,6 +86,8 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                     pipeContext.setFailure(e);
                     return;
                 }
+
+                log.debug(JenaUtils.write(page, Lang.TURTLE));
 
                 ResIterator it = page.listResourcesWithProperty(RDF.type, DCAT.Dataset);
 
