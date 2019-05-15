@@ -1,73 +1,18 @@
 # piveau importing rdf
-Microservice for importing from source and feeding a piveau pipe.
+Microservice for importing from source and feeding a pipe.
 
 The service is based on the [pipe-connector](https://gitlab.fokus.fraunhofer.de/viaduct/pipe-connector) library. Any configuration applicable for the pipe-connector can also be used for this service.
 
 ## Table of Contents
-1. [Pipe Configuration](#pipe-configuration)
-1. [Data Info Object](#data-info-object)
 1. [Build](#build)
 1. [Run](#run)
 1. [Docker](#docker)
+1. [Configuration](#configuration)
+    1. [Pipe](#pipe)
+    1. [Data Info Object](#data-info-object)
+    1. [Environment](#environment)
+    1. [Logging](#logging)
 1. [License](#license)
-
-## Pipe Configuration
-
-_mandatory_
-
-* `address` 
-
-    Address of the source
-
-_optional_
-
-* `removePrefix`
-
-    Try to remove prefix from uriRefs and take everything after last `/` as identifier. Default is `false`.
-
-* `precedenceUriRef`
-
-    Give uriRef precedence over `dct:identifier` as identifier. Default is `false`.
-
-* `inputFormat` 
-    
-    Mimetype to read from source. Overwrites header `Content-Type`
-
-* `outputFormat` 
-    
-    Mimetype to use for payload. Default is `application/n-triples`
-
-    Possible output formats:
-
-     * `application/rdf+xml`
-     * `application/n-triples`
-     * `application/ld+json`
-     * `application/trig`
-     * `text/turtle`
-     * `text/n3`
-
-* `brokenHydra`
-    
-    Some sources use a wrong urls in hydra information for paging. 
-If set to true the service will try to handle such broken hydra information. Default is `false`
- 
-## Data Info Object
-
-* `total` 
-
-    Total number of datasets
-
-* `counter` 
-
-    The number of this dataset
-
-* `identifier` 
-
-    The unique identifier in the source of this dataset
-
-* `hash` 
-
-    The hash value calculated at the source
 
 ## Build
 Requirements:
@@ -97,10 +42,98 @@ $ docker build -t piveau/piveau-importing-rdf .
 
 Run docker image:
 
-```^bash
+```bash
 $ docker run -it -p 8080:8080 piveau/piveau-importing-rdf
 ```
+## Configuration
+
+### Pipe
+
+_mandatory_
+
+* `address` 
+
+    Address of the source
+
+* `catalogue`
+
+    The id of the target catalogue
+
+_optional_
+
+* `removePrefix`
+
+    Try to remove prefix from uriRefs and take everything after last `/` as identifier. Default is `false`.
+
+* `precedenceUriRef`
+
+    Give uriRef precedence over `dct:identifier` as identifier. Default is `false`.
+
+* `inputFormat` 
+    
+    Mimetype to read from source. Takes precedence over header `Content-Type`
+
+* `outputFormat` 
+    
+    Mimetype to use for payload. Default is `application/n-triples`
+
+    Possible output formats are:
+
+     * `application/rdf+xml`
+     * `application/n-triples`
+     * `application/ld+json`
+     * `application/trig`
+     * `text/turtle`
+     * `text/n3`
+
+* `brokenHydra`
+    
+    Some sources use a wrong urls in hydra information for paging. If set to true the service will try to handle such broken hydra information. Default is `false`
+ 
+* `sendListDelay`
+
+    The delay in milliseconds before the list of identifiers is send. Take precedence over service configuration (see `PVEAU_IMPORTING_SEND_LIST_DELAY`)
+
+### Data Info Object
+
+* `total` 
+
+    Total number of datasets
+
+* `counter` 
+
+    The number of this dataset
+
+* `identifier` 
+
+    The unique identifier in the source of this dataset
+
+* `catalogue`
+
+    The id of the target catalogue
+
+* `hash` 
+
+    The hash value calculated at the source
+
+### Environment
+See also [pipe-connector](https://gitlab.fokus.fraunhofer.de/viaduct/pipe-connector)
+
+| Variable| Description | Default Value |
+| :--- | :--- | :--- |
+| `PIVEAU_IMPORTING_SEND_LIST_DELAY` | The delay in millisecond for sending the identifier list after the last dataset | `8000` |
+
+### Logging
+See [logback](https://logback.qos.ch/documentation.html) documentation for more details
+
+| Variable| Description | Default Value |
+| :--- | :--- | :--- |
+| `PIVEAU_PIPE_LOG_APPENDER` | Configures the log appender for the pipe context | `STDOUT` |
+| `LOGSTASH_HOST`            | The host of the logstash service | `logstash` |
+| `LOGSTASH_PORT`            | The port the logstash service is running | `5044` |
+| `PIVEAU_PIPE_LOG_PATH`     | Path to the file for the file appender | `logs/piveau-pipe.%d{yyyy-MM-dd}.log` |
+| `PIVEAU_PIPE_LOG_LEVEL`    | The log level for the pipe context | `INFO` |
 
 ## License
 
-[Apache License, Version 2.0](LICENSE.md)
+[The MIT License](LICENSE.md)
