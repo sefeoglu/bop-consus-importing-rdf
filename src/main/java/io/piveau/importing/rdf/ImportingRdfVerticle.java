@@ -92,7 +92,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                     String inputFormat = config.path("inputFormat").asText(response.getHeader("Content-Type"));
                     Model page;
                     try {
-                        page = JenaUtils.read(response.bodyAsBuffer().getBytes(), inputFormat);
+                        page = JenaUtils.read(response.bodyAsBuffer().getBytes(), inputFormat, address);
                     } catch (Exception e) {
                         pipeContext.setFailure(e);
                         return;
