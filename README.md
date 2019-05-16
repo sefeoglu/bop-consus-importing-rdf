@@ -29,7 +29,7 @@ $ mvn package
 ## Run
 
 ```bash
-$ java -jar target/piveau-importing-rdf-far.jar
+$ java -jar target/piveau-importing-rdf-fat.jar
 ```
 
 ## Docker
@@ -45,6 +45,7 @@ Run docker image:
 ```bash
 $ docker run -it -p 8080:8080 piveau/piveau-importing-rdf
 ```
+
 ## Configuration
 
 ### Pipe

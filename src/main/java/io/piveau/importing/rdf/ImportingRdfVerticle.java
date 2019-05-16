@@ -80,6 +80,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         boolean alternativeLoad = config.path("alternativeLoad").asBoolean(false);
 
         if (alternativeLoad) {
+            log.debug("Using alternative load...");
             Dataset catalogue = RDFDataMgr.loadDataset(address);
             pipeContext.log().info("Import metadata finished");
             log.debug(JenaUtils.write(catalogue.getDefaultModel(), Lang.TURTLE));
