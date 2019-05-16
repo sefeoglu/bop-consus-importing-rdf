@@ -15,6 +15,7 @@
 * `mode` configuration and fetchIdentifier
 
 **Fixed:**
+* Use address as baseUri for reading model
 
 ## [0.0.2](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/0.0.2) (2019-05-11)
 
