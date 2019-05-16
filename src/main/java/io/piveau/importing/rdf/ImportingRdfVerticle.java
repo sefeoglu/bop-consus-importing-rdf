@@ -77,78 +77,68 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         boolean removePrefix = config.path("removePrefix").asBoolean(false);
         boolean precedenceUriRef = config.path("precedenceUriRef").asBoolean(false);
 
-        boolean alternativeLoad = config.path("alternativeLoad").asBoolean(false);
-
-        if (alternativeLoad) {
-            log.debug("Using alternative load...");
-            Dataset catalogue = RDFDataMgr.loadDataset(address, Lang.JSONLD);
-            pipeContext.log().info("Import metadata finished");
-            log.debug(JenaUtils.write(catalogue.getDefaultModel(), Lang.TURTLE));
-        } else {
-            log.debug("Using original load...");
-            client.getAbs(address).send(ar -> {
-                if (ar.succeeded()) {
-                    HttpResponse<Buffer> response = ar.result();
-                    String inputFormat = config.path("inputFormat").asText(response.getHeader("Content-Type"));
-                    Model page;
-                    try {
-                        page = JenaUtils.read(response.bodyAsBuffer().getBytes(), inputFormat, address);
-                    } catch (Exception e) {
-                        pipeContext.setFailure(e);
-                        return;
-                    }
-
-                    log.debug(JenaUtils.write(page, Lang.TURTLE));
-
-                    ResIterator it = page.listResourcesWithProperty(RDF.type, DCAT.Dataset);
-
-                    boolean brokenHydra = config.path("brokenHydra").asBoolean(false);
-                    Hydra hydra = Hydra.findPaging(page, brokenHydra ? address : null);
-
-                    List<Resource> datasets = it.toList();
-                    datasets.forEach(resource -> {
-                        try {
-                            Model model = JenaUtils.extractResource(resource);
-                            String identifier = JenaUtils.findIdentifier(resource, removePrefix, precedenceUriRef);
-                            if (identifier == null) {
-                                pipeContext.log().warn("Could not extract an identifier from {}", resource.toString());
-                            } else {
-                                identifiers.add(identifier);
-                                String pretty = JenaUtils.write(model, outputFormat);
-                                ObjectNode dataInfo = new ObjectMapper().createObjectNode()
-                                        .put("total", hydra.total() != 0 ? hydra.total() : datasets.size())
-                                        .put("counter", identifiers.size())
-                                        .put("identifier", identifier)
-                                        .put("catalogue", config.path("catalogue").asText())
-                                        .put("hash", Hash.asHexString(pretty));
-                                pipeContext.setResult(pretty, outputFormat, dataInfo).forward(client);
-                                pipeContext.log().info("Data imported: {}", dataInfo);
-                            }
-                        } catch (Exception e) {
-                            pipeContext.log().warn(resource.toString(), e);
-                        }
-                    });
-
-                    String next = hydra.next();
-                    if (next != null) {
-                        fetchPage(next, pipeContext, identifiers);
-                    } else {
-                        pipeContext.log().info("Import metadata finished");
-                        int delay = pipeContext.getConfig().path("sendListDelay").asInt(defaultDelay);
-                        vertx.setTimer(delay, t -> {
-                            ObjectNode info = new ObjectMapper().createObjectNode()
-                                    .put("content", "identifierList")
-                                    .put("catalogue", config.path("catalogue").asText());
-                            pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", info).forward(client);
-                        });
-                    }
-
-                    page.close();
-                } else {
-                    pipeContext.setFailure(ar.cause());
+        client.getAbs(address).send(ar -> {
+            if (ar.succeeded()) {
+                HttpResponse<Buffer> response = ar.result();
+                String inputFormat = config.path("inputFormat").asText(response.getHeader("Content-Type"));
+                Model page;
+                try {
+                    page = JenaUtils.read(response.bodyAsBuffer().getBytes(), inputFormat, address);
+                } catch (Exception e) {
+                    pipeContext.setFailure(e);
+                    return;
                 }
-            });
-        }
+
+                log.debug(JenaUtils.write(page, Lang.TURTLE));
+
+                ResIterator it = page.listResourcesWithProperty(RDF.type, DCAT.Dataset);
+
+                boolean brokenHydra = config.path("brokenHydra").asBoolean(false);
+                Hydra hydra = Hydra.findPaging(page, brokenHydra ? address : null);
+
+                List<Resource> datasets = it.toList();
+                datasets.forEach(resource -> {
+                    try {
+                        Model model = JenaUtils.extractResource(resource);
+                        String identifier = JenaUtils.findIdentifier(resource, removePrefix, precedenceUriRef);
+                        if (identifier == null) {
+                            pipeContext.log().warn("Could not extract an identifier from {}", resource.toString());
+                        } else {
+                            identifiers.add(identifier);
+                            String pretty = JenaUtils.write(model, outputFormat);
+                            ObjectNode dataInfo = new ObjectMapper().createObjectNode()
+                                    .put("total", hydra.total() != 0 ? hydra.total() : datasets.size())
+                                    .put("counter", identifiers.size())
+                                    .put("identifier", identifier)
+                                    .put("catalogue", config.path("catalogue").asText())
+                                    .put("hash", Hash.asHexString(pretty));
+                            pipeContext.setResult(pretty, outputFormat, dataInfo).forward(client);
+                            pipeContext.log().info("Data imported: {}", dataInfo);
+                        }
+                    } catch (Exception e) {
+                        pipeContext.log().warn(resource.toString(), e);
+                    }
+                });
+
+                String next = hydra.next();
+                if (next != null) {
+                    fetchPage(next, pipeContext, identifiers);
+                } else {
+                    pipeContext.log().info("Import metadata finished");
+                    int delay = pipeContext.getConfig().path("sendListDelay").asInt(defaultDelay);
+                    vertx.setTimer(delay, t -> {
+                        ObjectNode info = new ObjectMapper().createObjectNode()
+                                .put("content", "identifierList")
+                                .put("catalogue", config.path("catalogue").asText());
+                        pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", info).forward(client);
+                    });
+                }
+
+                page.close();
+            } else {
+                pipeContext.setFailure(ar.cause());
+            }
+        });
     }
 
 }
