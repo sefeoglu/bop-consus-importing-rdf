@@ -85,6 +85,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
             pipeContext.log().info("Import metadata finished");
             log.debug(JenaUtils.write(catalogue.getDefaultModel(), Lang.TURTLE));
         } else {
+            log.debug("Using original load...");
             client.getAbs(address).send(ar -> {
                 if (ar.succeeded()) {
                     HttpResponse<Buffer> response = ar.result();
