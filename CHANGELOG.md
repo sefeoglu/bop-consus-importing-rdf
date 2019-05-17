@@ -15,7 +15,7 @@
 **Added:**
 * `catalogue` read from configuration and pass it to the info object
 * Environment `PIVEAU_IMPORTING_SEND_LIST_DELAY` for a configurable delay
-* `sendListData` pipe configuration option
+* `sendListDelay` pipe configuration option
 
 **Changed:**
 * Readme
