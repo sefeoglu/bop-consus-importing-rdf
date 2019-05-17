@@ -8,6 +8,13 @@
     <artifactId>piveau-importing-rdf</artifactId>
     <version>0.0.3-SNAPSHOT</version>
 
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vertx.version>3.7.0</vertx.version>
@@ -66,13 +73,13 @@
         <dependency>
             <groupId>io.piveau</groupId>
             <artifactId>piveau-utils</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
+            <version>0.0.3</version>
         </dependency>
 
         <dependency>
             <groupId>io.piveau</groupId>
             <artifactId>pipe-connector</artifactId>
-            <version>0.0.4-SNAPSHOT</version>
+            <version>0.0.3</version>
         </dependency>
 
         <dependency>
