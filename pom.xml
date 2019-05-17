@@ -25,7 +25,7 @@
         <repository>
             <id>paca</id>
             <name>paca</name>
-            <url>https://paca.fokus.fraunhofer.de/repository/maven-public/</url>
+            <url>https://paca.okd.fokus.fraunhofer.de/repository/maven-public/</url>
         </repository>
     </repositories>
 
