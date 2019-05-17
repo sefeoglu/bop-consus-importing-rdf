@@ -137,4 +137,4 @@ See [logback](https://logback.qos.ch/documentation.html) documentation for more 
 
 ## License
 
-[The MIT License](LICENSE.md)
+[MIT License](LICENSE.md)
