@@ -3,9 +3,19 @@
 ## Unreleased
 
 **Added:**
+
+**Changed:**
+
+**Removed:**
+
+**Fixed:**
+
+## [0.1.0](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/0.1.0) (2019-05-17)
+
+**Added:**
 * `catalogue` read from configuration and pass it to the info object
 * Environment `PIVEAU_IMPORTING_SEND_LIST_DELAY` for a configurable delay
-* `sendListData` pipe configuration option
+* `sendListDelay` pipe configuration option
 
 **Changed:**
 * Readme
