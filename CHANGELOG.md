@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Unreleased
+## [0.1.0](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/0.1.0) (2019-05-17)
 
 **Added:**
 * `catalogue` read from configuration and pass it to the info object
