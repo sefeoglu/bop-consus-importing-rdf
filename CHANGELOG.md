@@ -3,8 +3,10 @@
 ## Unreleased
 
 **Added:**
+* buildInfo.json for build info via `/health` path
 
 **Changed:**
+* Add `PIVEAU_` prefix to logstash configuration environment variables
 
 **Removed:**
 
