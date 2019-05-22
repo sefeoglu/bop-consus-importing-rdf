@@ -11,7 +11,7 @@
     <if condition='property("pipeAppender").equals("LOGSTASH")'>
         <then>
             <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-                <destination>${LOGSTASH_HOST:-logstash}:${LOGSTASH_PORT:-5044}</destination>
+                <destination>${PIVEAU_LOGSTASH_HOST:-logstash}:${PIVEAU_LOGSTASH_PORT:-5044}</destination>
                 <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
             </appender>
         </then>

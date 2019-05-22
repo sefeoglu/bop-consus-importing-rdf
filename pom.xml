@@ -17,6 +17,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+        <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
         <vertx.version>3.7.0</vertx.version>
         <main.verticle>io.piveau.importing.MainVerticle</main.verticle>
     </properties>
@@ -116,7 +118,12 @@
     </dependencies>
 
     <build>
-
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>

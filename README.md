@@ -130,8 +130,8 @@ See [logback](https://logback.qos.ch/documentation.html) documentation for more 
 | Variable| Description | Default Value |
 | :--- | :--- | :--- |
 | `PIVEAU_PIPE_LOG_APPENDER` | Configures the log appender for the pipe context | `STDOUT` |
-| `LOGSTASH_HOST`            | The host of the logstash service | `logstash` |
-| `LOGSTASH_PORT`            | The port the logstash service is running | `5044` |
+| `PIVEAU_LOGSTASH_HOST`            | The host of the logstash service | `logstash` |
+| `PIVEAU_LOGSTASH_PORT`            | The port the logstash service is running | `5044` |
 | `PIVEAU_PIPE_LOG_PATH`     | Path to the file for the file appender | `logs/piveau-pipe.%d{yyyy-MM-dd}.log` |
 | `PIVEAU_PIPE_LOG_LEVEL`    | The log level for the pipe context | `INFO` |
 
