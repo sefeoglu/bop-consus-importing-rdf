@@ -6,7 +6,7 @@
 
     <groupId>io.piveau</groupId>
     <artifactId>piveau-importing-rdf</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -17,9 +17,19 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vertx.version>3.7.0</vertx.version>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+        <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
+        <vertx.version>3.8.0</vertx.version>
         <main.verticle>io.piveau.importing.MainVerticle</main.verticle>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>paca</id>
+            <name>paca</name>
+            <url>https://paca.okd.fokus.fraunhofer.de/repository/maven-public/</url>
+        </repository>
+    </repositories>
 
     <dependencyManagement>
         <dependencies>
@@ -79,7 +89,7 @@
         <dependency>
             <groupId>io.piveau</groupId>
             <artifactId>pipe-connector</artifactId>
-            <version>0.0.3</version>
+            <version>0.0.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -108,7 +118,12 @@
     </dependencies>
 
     <build>
-
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
