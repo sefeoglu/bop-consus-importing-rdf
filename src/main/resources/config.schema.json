@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://io.piveau/resources/importing-rdf/config.schema.json",
+  "title": "importing-rdf configuration",
+  "description": "piveau pipe segment config object schema",
+  "type": "object",
+  "required": [ "address", "catalogue" ],
+  "properties": {
+    "address": {
+      "type": "string",
+      "title": "The source address to import from"
+    },
+    "catalogue": {
+      "type": "string",
+      "title": "The target catalogue id"
+    },
+    "removePrefix": {
+      "type": "boolean",
+      "title": "Remove url prefix",
+      "description": "Try to remove prefix from uriRefs and take everything after last '/' as identifier.",
+      "default": false
+    },
+    "precedenceUriRef": {
+      "type": "boolean",
+      "title": "Take uriRef precedence",
+      "description": "Give uriRef precedence over 'dct:identifier' as identifier.",
+      "default": false
+    },
+    "brokenHydra": {
+      "type": "boolean",
+      "title": "Has broken hydra",
+      "default": "false"
+    },
+    "inputFormat": {
+      "type": "string",
+      "title": "Mimetype of source format",
+      "description": "Forces to read import in given format. Takes precedence over header Content-Type"
+    },
+    "outputFormat": {
+      "enum": [
+        "application/rdf+xml",
+        "application/n-triples",
+        "application/ld+json",
+        "application/trig",
+        "text/turtle",
+        "text/n3"
+      ],
+      "title": "The output format",
+      "default": "application/n-triples"
+    },
+    "sendListDelay": {
+      "type": "integer",
+      "title": "The delay before sending the identifier list"
+    }
+  }
+}
