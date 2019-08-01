@@ -35,8 +35,6 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
     public static final String ADDRESS = "io.piveau.pipe.importing.rdf.queue";
 
-    private static final String digits = "0123456789ABCDEF";
-
     private WebClient client;
 
     private int defaultDelay;
@@ -111,7 +109,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                                     .put("counter", identifiers.size())
                                     .put("identifier", identifier)
                                     .put("catalogue", config.path("catalogue").asText())
-                                    .put("hash", pseudo(model));
+                                    .put("hash", JenaUtils.canonicalHash(model));
                             pipeContext.setResult(pretty, outputFormat, dataInfo).forward(client);
                             pipeContext.log().info("Data imported: {}", dataInfo);
                             pipeContext.log().debug("Data content: {}", pretty);
@@ -142,53 +140,4 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         });
     }
 
-    private String pseudo(Model model) {
-        long totalHash = 0;
-
-        StmtIterator it = model.listStatements();
-        while (it.hasNext()) {
-            Statement stm = it.nextStatement();
-
-            long basicHash = tripleHash(stm.asTriple());
-
-            if (stm.getSubject().isAnon()) {
-                StmtIterator objIt = model.listStatements(null, null, stm.getSubject());
-                while (objIt.hasNext()) {
-                    basicHash = (basicHash + tripleHash(objIt.nextStatement().asTriple())) % Long.MAX_VALUE;
-                }
-            }
-
-            if (stm.getObject().isAnon()) {
-                StmtIterator subjIt = stm.getObject().asResource().listProperties();
-                while (subjIt.hasNext()) {
-                    basicHash = (basicHash + tripleHash(subjIt.nextStatement().asTriple())) % Long.MAX_VALUE;
-                }
-            }
-
-            totalHash = (totalHash + basicHash) % Integer.MAX_VALUE;
-        }
-
-        return Long.toHexString(totalHash);
-    }
-
-    private long tripleHash(Triple triple) {
-
-        Node subject = triple.getSubject();
-        Node predicate = triple.getPredicate();
-        Node object = triple.getObject();
-
-        String content = subject.isBlank() ? "Magic_S" : subject.toString();
-        content += predicate.toString();
-        content += object.isBlank() ? "Magic_O" : object.toString();
-
-        return getDecimal(Hash.asHexString(content));
-    }
-
-    private long getDecimal(String hex) {
-        long val = 0;
-        for (char c : hex.toUpperCase().toCharArray()) {
-            val = 16 * val + (long) digits.indexOf(c);
-        }
-        return val;
-    }
 }
