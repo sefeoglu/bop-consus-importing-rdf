@@ -13,6 +13,7 @@
 * Add `PIVEAU_` prefix to logstash configuration environment variables
 * Upgrade to vert.x 3.8.0
 * Upgrade gitlab ci maven image
+* Use jena utils for canonical hash calculation
 
 **Removed:**
 
