@@ -18,8 +18,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.*;
@@ -36,6 +34,8 @@ public class ImportingRdfVerticle extends AbstractVerticle {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     public static final String ADDRESS = "io.piveau.pipe.importing.rdf.queue";
+
+    private static final String digits = "0123456789ABCDEF";
 
     private WebClient client;
 
@@ -143,32 +143,35 @@ public class ImportingRdfVerticle extends AbstractVerticle {
     }
 
     private String pseudo(Model model) {
-        int totalHash = 0;
+        long totalHash = 0;
 
         StmtIterator it = model.listStatements();
         while (it.hasNext()) {
             Statement stm = it.nextStatement();
-            totalHash = (totalHash + tripleHash(stm.asTriple())) % Integer.MAX_VALUE;
+
+            long basicHash = tripleHash(stm.asTriple());
 
             if (stm.getSubject().isAnon()) {
                 StmtIterator objIt = model.listStatements(null, null, stm.getSubject());
                 while (objIt.hasNext()) {
-                    totalHash = (totalHash + tripleHash(objIt.nextStatement().asTriple())) % Integer.MAX_VALUE;
+                    basicHash = (basicHash + tripleHash(objIt.nextStatement().asTriple())) % Long.MAX_VALUE;
                 }
             }
 
             if (stm.getObject().isAnon()) {
                 StmtIterator subjIt = stm.getObject().asResource().listProperties();
                 while (subjIt.hasNext()) {
-                    totalHash = (totalHash + tripleHash(subjIt.nextStatement().asTriple())) % Integer.MAX_VALUE;
+                    basicHash = (basicHash + tripleHash(subjIt.nextStatement().asTriple())) % Long.MAX_VALUE;
                 }
             }
-        };
 
-        return Integer.toHexString(totalHash);
+            totalHash = (totalHash + basicHash) % Integer.MAX_VALUE;
+        }
+
+        return Long.toHexString(totalHash);
     }
 
-    private int tripleHash(Triple triple) {
+    private long tripleHash(Triple triple) {
 
         Node subject = triple.getSubject();
         Node predicate = triple.getPredicate();
@@ -181,15 +184,10 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         return getDecimal(Hash.asHexString(content));
     }
 
-    private int getDecimal(String hex){
-        String digits = "0123456789ABCDEF";
-        hex = hex.toUpperCase();
-        int val = 0;
-        for (int i = 0; i < hex.length(); i++)
-        {
-            char c = hex.charAt(i);
-            int d = digits.indexOf(c);
-            val = 16*val + d;
+    private long getDecimal(String hex) {
+        long val = 0;
+        for (char c : hex.toUpperCase().toCharArray()) {
+            val = 16 * val + (long) digits.indexOf(c);
         }
         return val;
     }
