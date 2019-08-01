@@ -6,7 +6,8 @@
 * buildInfo.json for build info via `/health` path
 * config.schema.json
 * Add PIVEAU_LOG_LEVEL in logback.xml
-
+* Add pipe log debug output of data content
+ 
 **Changed:**
 * Add `PIVEAU_` prefix to logstash configuration environment variables
 * Upgrade to vert.x 3.8.0

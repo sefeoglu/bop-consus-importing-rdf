@@ -19,6 +19,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import org.apache.jena.query.Dataset;
+import org.apache.jena.rdf.model.AnonId;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
@@ -114,6 +115,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                                     .put("hash", Hash.asHexString(pretty));
                             pipeContext.setResult(pretty, outputFormat, dataInfo).forward(client);
                             pipeContext.log().info("Data imported: {}", dataInfo);
+                            pipeContext.log().debug("Data content: {}", pretty);
                         }
                     } catch (Exception e) {
                         pipeContext.log().warn(resource.toString(), e);
