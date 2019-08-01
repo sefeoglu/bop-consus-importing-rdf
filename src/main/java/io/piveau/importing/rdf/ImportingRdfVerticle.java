@@ -18,13 +18,12 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
-import org.apache.jena.query.Dataset;
-import org.apache.jena.rdf.model.AnonId;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ResIterator;
-import org.apache.jena.rdf.model.Resource;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.DCAT;
 import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
@@ -112,7 +111,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                                     .put("counter", identifiers.size())
                                     .put("identifier", identifier)
                                     .put("catalogue", config.path("catalogue").asText())
-                                    .put("hash", Hash.asHexString(pretty));
+                                    .put("hash", pseudo(model));
                             pipeContext.setResult(pretty, outputFormat, dataInfo).forward(client);
                             pipeContext.log().info("Data imported: {}", dataInfo);
                             pipeContext.log().debug("Data content: {}", pretty);
@@ -141,6 +140,45 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                 pipeContext.setFailure(ar.cause());
             }
         });
+    }
+
+    private String pseudo(Model model) {
+        int totalHash = 0;
+
+        StmtIterator it = model.listStatements();
+        while (it.hasNext()) {
+            Statement stm = it.nextStatement();
+            totalHash = (totalHash + tripleHash(stm.asTriple())) % Integer.MAX_VALUE;
+
+            if (stm.getSubject().isAnon()) {
+                StmtIterator objIt = model.listStatements(null, null, stm.getSubject());
+                while (objIt.hasNext()) {
+                    totalHash = (totalHash + tripleHash(objIt.nextStatement().asTriple())) % Integer.MAX_VALUE;
+                }
+            }
+
+            if (stm.getObject().isAnon()) {
+                StmtIterator subjIt = stm.getObject().asResource().listProperties();
+                while (subjIt.hasNext()) {
+                    totalHash = (totalHash + tripleHash(subjIt.nextStatement().asTriple())) % Integer.MAX_VALUE;
+                }
+            }
+        };
+
+        return Integer.toHexString(totalHash);
+    }
+
+    private int tripleHash(Triple triple) {
+
+        Node subject = triple.getSubject();
+        Node predicate = triple.getPredicate();
+        Node object = triple.getObject();
+
+        String content = subject.isBlank() ? "Magic_S" : subject.toString();
+        content += predicate.toString();
+        content += object.isBlank() ? "Magic_O" : object.toString();
+
+        return Integer.parseInt(Hash.asHexString(content), 16);
     }
 
 }
