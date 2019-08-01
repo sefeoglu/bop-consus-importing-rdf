@@ -143,7 +143,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
     }
 
     private String pseudo(Model model) {
-        long totalHash = 0;
+        int totalHash = 0;
 
         StmtIterator it = model.listStatements();
         while (it.hasNext()) {
@@ -165,10 +165,10 @@ public class ImportingRdfVerticle extends AbstractVerticle {
             }
         };
 
-        return Long.toHexString(totalHash);
+        return Integer.toHexString(totalHash);
     }
 
-    private long tripleHash(Triple triple) {
+    private int tripleHash(Triple triple) {
 
         Node subject = triple.getSubject();
         Node predicate = triple.getPredicate();
@@ -178,7 +178,19 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         content += predicate.toString();
         content += object.isBlank() ? "Magic_O" : object.toString();
 
-        return Long.parseLong(Hash.asHexString(content), 16);
+        return getDecimal(Hash.asHexString(content));
     }
 
+    private int getDecimal(String hex){
+        String digits = "0123456789ABCDEF";
+        hex = hex.toUpperCase();
+        int val = 0;
+        for (int i = 0; i < hex.length(); i++)
+        {
+            char c = hex.charAt(i);
+            int d = digits.indexOf(c);
+            val = 16*val + d;
+        }
+        return val;
+    }
 }
