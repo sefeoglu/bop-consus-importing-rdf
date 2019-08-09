@@ -7,17 +7,18 @@
 * config.schema.json
 * Add PIVEAU_LOG_LEVEL in logback.xml
 * Add pipe log debug output of data content
-* Experimental canonical model hash
   
 **Changed:**
 * Add `PIVEAU_` prefix to logstash configuration environment variables
 * Upgrade to vert.x 3.8.0
 * Upgrade gitlab ci maven image
 * Use jena utils for canonical hash calculation
+* Updated lib dependencies
 
 **Removed:**
 
 **Fixed:**
+* Hydra is now HydraPaging
 
 ## [0.1.0](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/0.1.0) (2019-05-17)
 

@@ -2,8 +2,8 @@ package io.piveau.importing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.piveau.pipe.model.Pipe;
-import io.piveau.pipe.utils.PipeManager;
+import io.piveau.pipe.Pipe;
+import io.piveau.pipe.PipeManager;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;

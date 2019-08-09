@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.piveau.pipe.connector.PipeContext;
 import io.piveau.utils.Hash;
-import io.piveau.utils.Hydra;
+import io.piveau.utils.HydraPaging;
 import io.piveau.utils.JenaUtils;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
@@ -92,7 +92,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                 ResIterator it = page.listResourcesWithProperty(RDF.type, DCAT.Dataset);
 
                 boolean brokenHydra = config.path("brokenHydra").asBoolean(false);
-                Hydra hydra = Hydra.findPaging(page, brokenHydra ? address : null);
+                HydraPaging hydra = HydraPaging.findPaging(page, brokenHydra ? address : null);
 
                 List<Resource> datasets = it.toList();
                 datasets.forEach(resource -> {
@@ -105,7 +105,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                             identifiers.add(identifier);
                             String pretty = JenaUtils.write(model, outputFormat);
                             ObjectNode dataInfo = new ObjectMapper().createObjectNode()
-                                    .put("total", hydra.total() != 0 ? hydra.total() : datasets.size())
+                                    .put("total", hydra.getTotal() != 0 ? hydra.getTotal() : datasets.size())
                                     .put("counter", identifiers.size())
                                     .put("identifier", identifier)
                                     .put("catalogue", config.path("catalogue").asText())
