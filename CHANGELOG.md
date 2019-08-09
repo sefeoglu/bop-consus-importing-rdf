@@ -5,8 +5,9 @@
 **Added:**
 * buildInfo.json for build info via `/health` path
 * config.schema.json
-* Add PIVEAU_LOG_LEVEL in logback.xml
-* Add pipe log debug output of data content
+* PIVEAU_LOG_LEVEL in logback.xml
+* Pipe log debug output of data content
+* `sendHash` pipe configuration parameter
   
 **Changed:**
 * Add `PIVEAU_` prefix to logstash configuration environment variables
@@ -14,9 +15,9 @@
 * Upgrade gitlab ci maven image
 * Use jena utils for canonical hash calculation
 * Updated lib dependencies
+* Optional canonical hash attachment on dataInfo
 
 **Removed:**
-* Canonical hash attachment on dataInfo
 
 **Fixed:**
 * Hydra is now HydraPaging
