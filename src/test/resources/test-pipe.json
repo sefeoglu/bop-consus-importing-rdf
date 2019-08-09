@@ -20,8 +20,8 @@
             "address": "http://localhost:8080/pipe"
           },
           "config": {
-            "address": "http://ondemand2.redes.ondemand.flumotion.com/redes/ondemand2/Datosabiertos/datosgobes.rdf",
-            "inputFormat": "application/rdf+xml"
+            "address": "https://www.govdata.de/ckan/catalog/catalog.rdf",
+            "catalogue": "govdata"
           }
         }
       }
