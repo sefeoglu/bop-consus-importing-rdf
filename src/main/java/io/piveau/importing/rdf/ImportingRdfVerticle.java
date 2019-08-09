@@ -71,6 +71,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
         boolean removePrefix = config.path("removePrefix").asBoolean(false);
         boolean precedenceUriRef = config.path("precedenceUriRef").asBoolean(false);
+        boolean sendHash = config.path("sendHash").asBoolean(false);
 
         client.getAbs(address).send(ar -> {
             if (ar.succeeded()) {
@@ -105,8 +106,10 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                                     .put("total", hydra.getTotal() != 0 ? hydra.getTotal() : datasets.size())
                                     .put("counter", identifiers.size())
                                     .put("identifier", identifier)
-//                                    .put("hash", JenaUtils.canonicalHash(model))
                                     .put("catalogue", config.path("catalogue").asText());
+                            if (sendHash) {
+                                dataInfo.put("hash", JenaUtils.canonicalHash(model));
+                            }
                             pipeContext.setResult(pretty, outputFormat, dataInfo).forward(client);
                             pipeContext.log().info("Data imported: {}", dataInfo);
                             pipeContext.log().debug("Data content: {}", pretty);
