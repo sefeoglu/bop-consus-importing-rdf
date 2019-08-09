@@ -16,6 +16,7 @@
 * Updated lib dependencies
 
 **Removed:**
+* Canonical hash attachment on dataInfo
 
 **Fixed:**
 * Hydra is now HydraPaging
