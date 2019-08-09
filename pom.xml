@@ -6,7 +6,7 @@
 
     <groupId>io.piveau</groupId>
     <artifactId>piveau-importing-rdf</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -83,13 +83,13 @@
         <dependency>
             <groupId>io.piveau</groupId>
             <artifactId>piveau-utils</artifactId>
-            <version>0.0.4-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>io.piveau</groupId>
             <artifactId>pipe-connector</artifactId>
-            <version>0.0.4-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>
