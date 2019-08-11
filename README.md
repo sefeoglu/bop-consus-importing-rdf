@@ -99,6 +99,10 @@ _optional_
 
     The delay in milliseconds before the list of identifiers is send. Take precedence over service configuration (see `PVEAU_IMPORTING_SEND_LIST_DELAY`)
 
+* `sendHash`
+
+    Append a hash value to the dataInfo object. Default is `false` 
+
 ### Data Info Object
 
 * `total` 
