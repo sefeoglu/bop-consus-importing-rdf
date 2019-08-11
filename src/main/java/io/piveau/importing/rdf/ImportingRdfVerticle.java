@@ -53,6 +53,9 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                 startPromise.fail(ar.cause());
             }
         });
+        retriever.listen(change -> {
+            defaultDelay = change.getNewConfiguration().getInteger("PIVEAU_IMPORTING_SEND_LIST_DELAY", 8000);
+        });
     }
 
     private void handlePipe(Message<PipeContext> message) {
