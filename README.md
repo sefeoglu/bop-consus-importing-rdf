@@ -138,7 +138,7 @@ See [logback](https://logback.qos.ch/documentation.html) documentation for more 
 | `PIVEAU_LOGSTASH_PORT`            | The port the logstash service is running | `5044` |
 | `PIVEAU_PIPE_LOG_PATH`     | Path to the file for the file appender | `logs/piveau-pipe.%d{yyyy-MM-dd}.log` |
 | `PIVEAU_PIPE_LOG_LEVEL`    | The log level for the pipe context | `INFO` |
-| `PIVEAU_LOG_LEVEL`    | The log level for the service | `INFO` |
+| `PIVEAU_LOG_LEVEL`    | The general log level for the `io.piveau` package | `INFO` |
 
 ## License
 
