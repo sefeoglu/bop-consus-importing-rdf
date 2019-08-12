@@ -24,6 +24,22 @@
             "catalogue": "govdata"
           }
         }
+      },
+      {
+        "header": {
+          "name": "exporting-hub",
+          "segmentNumber": 2,
+          "title": "Exporting hub",
+          "processed": false
+        },
+        "body": {
+          "endpoint": {
+            "address": "http://localhost:8080/pipe"
+          },
+          "config": {
+            "address": "https://localhost:8090/hub"
+          }
+        }
       }
     ]
   }
