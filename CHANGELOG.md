@@ -17,7 +17,7 @@
 * Use jena utils for canonical hash calculation
 * Updated lib dependencies
 * Optional canonical hash attachment on dataInfo
-* Update pipe-connector dependency to release 1.0.2
+* Update pipe-connector dependency to release 1.0.3
 
 **Removed:**
 
