@@ -11,12 +11,13 @@
 * Configuration change listener
    
 **Changed:**
-* Add `PIVEAU_` prefix to logstash configuration environment variables
+* `PIVEAU_` prefix to logstash configuration environment variables
 * Upgrade to vert.x 3.8.0
 * Upgrade gitlab ci maven image
 * Use jena utils for canonical hash calculation
 * Updated lib dependencies
 * Optional canonical hash attachment on dataInfo
+* Update pipe-connector dependency to release 1.0.2
 
 **Removed:**
 
