@@ -8,6 +8,7 @@
 * `PIVEAU_LOG_LEVEL` in logback.xml
 * Pipe log debug output of data content
 * `sendHash` pipe configuration parameter
+* `sendHash` to config schema
 * Configuration change listener
    
 **Changed:**
@@ -17,7 +18,7 @@
 * Use jena utils for canonical hash calculation
 * Updated lib dependencies
 * Optional canonical hash attachment on dataInfo
-* Update pipe-connector dependency to release 1.0.3
+* Update pipe-connector dependency to release 1.0.4
 
 **Removed:**
 
