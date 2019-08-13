@@ -51,6 +51,11 @@
     "sendListDelay": {
       "type": "integer",
       "title": "The delay before sending the identifier list"
+    },
+    "sendHash": {
+      "type": "boolean",
+      "title": "Generate and send a hash value",
+      "default": false
     }
   }
 }
