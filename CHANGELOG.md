@@ -17,6 +17,7 @@
 * Use jena utils for canonical hash calculation
 * Optional canonical hash attachment on dataInfo
 * Requires now latest LTS Java 11
+* Docker base image to openjdk:11-jre
 
 **Removed:**
 
