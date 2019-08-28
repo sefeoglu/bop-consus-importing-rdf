@@ -13,17 +13,16 @@
    
 **Changed:**
 * `PIVEAU_` prefix to logstash configuration environment variables
-* Upgrade to vert.x 3.8.0
 * Upgrade gitlab ci maven image
 * Use jena utils for canonical hash calculation
-* Updated lib dependencies
 * Optional canonical hash attachment on dataInfo
-* Update pipe-connector dependency to release 1.0.4
+* Requires now latest LTS Java 11
 
 **Removed:**
 
 **Fixed:**
 * Hydra is now HydraPaging
+* Update all dependencies
 
 ## [0.1.0](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/0.1.0) (2019-05-17)
 

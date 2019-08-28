@@ -17,8 +17,8 @@ The service is based on the [pipe-connector](https://gitlab.fokus.fraunhofer.de/
 ## Build
 Requirements:
  * Git
- * Maven
- * Java
+ * Maven 3
+ * Java 11
 
 ```bash
 $ git clone https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf.git
