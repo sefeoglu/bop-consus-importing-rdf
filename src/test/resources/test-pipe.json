@@ -1,6 +1,7 @@
 {
   "header": {
     "id": "4ff7a0a7-2fc3-4e84-a6ef-a83ab55b698c",
+    "name": "test-pipe",
     "title": "Test Pipe",
     "context": "JUnit5 Tests",
     "transport": "payload",
@@ -20,24 +21,8 @@
             "address": "http://localhost:8080/pipe"
           },
           "config": {
-            "address": "https://www.govdata.de/ckan/catalog/catalog.rdf",
-            "catalogue": "govdata"
-          }
-        }
-      },
-      {
-        "header": {
-          "name": "exporting-hub",
-          "segmentNumber": 2,
-          "title": "Exporting hub",
-          "processed": false
-        },
-        "body": {
-          "endpoint": {
-            "address": "http://localhost:8080/pipe"
-          },
-          "config": {
-            "address": "https://localhost:8090/hub"
+            "address": "http://localhost:8098/catalog.rdf",
+            "catalogue": "test-catalogue"
           }
         }
       }
