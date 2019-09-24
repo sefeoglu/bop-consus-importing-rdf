@@ -21,8 +21,8 @@
             "address": "http://localhost:8080/pipe"
           },
           "config": {
-            "address": "http://localhost:8098/catalog.rdf",
-            "catalogue": "test-catalogue"
+            "address": "https://opendata.swiss/catalog.xml",
+            "catalogue": "opendata-swiss"
           }
         }
       }
