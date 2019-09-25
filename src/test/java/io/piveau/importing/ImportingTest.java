@@ -38,13 +38,13 @@ class ImportingTest {
                 WebClient client = WebClient.create(vertx);
                 client.post(8080, "localhost", "/pipe")
                         .putHeader("content-type", "application/json")
-                        .sendJsonObject(pipe, testContext.succeeding(response -> testContext.verify(() -> {
+                        .sendJsonObject(pipe, testContext.succeeding(response -> {
                             if (response.statusCode() == 202) {
                                 checkpoint.flag();
                             } else {
                                 testContext.failNow(new Throwable(response.statusMessage()));
                             }
-                        })));
+                        }));
             } else {
                 testContext.failNow(result.cause());
             }
