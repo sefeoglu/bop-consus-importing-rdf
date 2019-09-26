@@ -24,6 +24,7 @@
 **Fixed:**
 * Hydra is now HydraPaging
 * Update all dependencies
+* Force snapshot update when building package in gitlab ci
 
 ## [0.1.0](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/0.1.0) (2019-05-17)
 
