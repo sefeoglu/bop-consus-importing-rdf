@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Unreleased
+## [1.0.0](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/1.0.0) (2019-11-08)
 
 **Added:**
 * buildInfo.json for build info via `/health` path
