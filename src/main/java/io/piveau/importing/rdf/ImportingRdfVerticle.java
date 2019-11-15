@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.piveau.pipe.connector.PipeContext;
+import io.piveau.rdf.PreProcessing;
 import io.piveau.utils.HydraPaging;
 import io.piveau.utils.JenaUtils;
 import io.vertx.config.ConfigRetriever;
@@ -78,9 +79,11 @@ public class ImportingRdfVerticle extends AbstractVerticle {
             if (ar.succeeded()) {
                 HttpResponse<Buffer> response = ar.result();
                 String inputFormat = config.path("inputFormat").asText(response.getHeader("Content-Type"));
+                byte[] parsed = PreProcessing.preProcess(response.bodyAsBuffer().getBytes(), inputFormat, address);
+
                 Model page;
                 try {
-                    page = JenaUtils.read(response.bodyAsBuffer().getBytes(), JenaUtils.mimeTypeToLang(inputFormat), address);
+                    page = JenaUtils.read(parsed, Lang.NTRIPLES, address);
                 } catch (Exception e) {
                     pipeContext.setFailure(e);
                     return;
