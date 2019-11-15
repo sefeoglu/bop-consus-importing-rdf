@@ -1,5 +1,8 @@
 # ChangeLog
 
+**Added:**
+* Pre-processing to fix malformed URIRefs
+
 ## [1.0.0](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/1.0.0) (2019-11-08)
 
 **Added:**
