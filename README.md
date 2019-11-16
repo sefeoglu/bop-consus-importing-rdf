@@ -103,6 +103,10 @@ _optional_
 
     Append a hash value to the dataInfo object. Default is `false` 
 
+* `preProcessing`
+
+    Any pre-processing (e.g. URI encoding fixes) should take place. Overwrites importers configuration (see `PIVEAU_IMPORTING_PREPROCESSING`)
+
 ### Data Info Object
 
 * `total` 
@@ -131,6 +135,7 @@ See also [pipe-connector](https://gitlab.fokus.fraunhofer.de/viaduct/pipe-connec
 | Variable| Description | Default Value |
 | :--- | :--- | :--- |
 | `PIVEAU_IMPORTING_SEND_LIST_DELAY` | The delay in millisecond for sending the identifier list after the last dataset | `8000` |
+| `PIVEAU_IMPORTING_PREPROCESSING` | Generally do some pre-processing, e.g. to fix URI encoding issues | `false` |
 
 ### Logging
 See [logback](https://logback.qos.ch/documentation.html) documentation for more details
