@@ -3,6 +3,9 @@
 **Added:**
 * Pre-processing to fix malformed URIRefs
 
+**Fixed:**
+* Expect only 200er responses as success and parse them
+
 ## [1.0.0](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/1.0.0) (2019-11-08)
 
 **Added:**

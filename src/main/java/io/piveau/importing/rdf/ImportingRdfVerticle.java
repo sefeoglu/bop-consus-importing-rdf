@@ -18,6 +18,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
+import io.vertx.ext.web.client.predicate.ResponsePredicate;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.vocabulary.DCAT;
@@ -75,7 +76,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         boolean precedenceUriRef = config.path("precedenceUriRef").asBoolean(false);
         boolean sendHash = config.path("sendHash").asBoolean(false);
 
-        client.getAbs(address).send(ar -> {
+        client.getAbs(address).expect(ResponsePredicate.SC_SUCCESS).send(ar -> {
             if (ar.succeeded()) {
                 HttpResponse<Buffer> response = ar.result();
                 String inputFormat = config.path("inputFormat").asText(response.getHeader("Content-Type"));
