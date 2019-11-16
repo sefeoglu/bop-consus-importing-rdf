@@ -87,11 +87,12 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                 byte[] content = response.bodyAsBuffer().getBytes();
                 if (applyPreProcessing) {
                     content = PreProcessing.preProcess(content, inputFormat, address);
+                    inputFormat = "application/n-triples";
                 }
 
                 Model page;
                 try {
-                    page = JenaUtils.read(content, Lang.NTRIPLES, address);
+                    page = JenaUtils.read(content, inputFormat, address);
                 } catch (Exception e) {
                     pipeContext.setFailure(e);
                     return;
