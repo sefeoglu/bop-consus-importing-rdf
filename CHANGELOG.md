@@ -2,6 +2,7 @@
 
 **Added:**
 * Pre-processing to fix malformed URIRefs
+* Configuration for pre-processing
 
 **Fixed:**
 * Expect only 200er responses as success and parse them
