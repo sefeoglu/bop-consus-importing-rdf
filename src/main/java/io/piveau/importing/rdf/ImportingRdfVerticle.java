@@ -37,6 +37,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
     private WebClient client;
 
     private int defaultDelay;
+    private boolean preProcessing;
 
     @Override
     public void start(Promise<Void> startPromise) {
@@ -45,11 +46,12 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
         ConfigStoreOptions envStoreOptions = new ConfigStoreOptions()
                 .setType("env")
-                .setConfig(new JsonObject().put("keys", new JsonArray().add("PIVEAU_IMPORTING_SEND_LIST_DELAY")));
+                .setConfig(new JsonObject().put("keys", new JsonArray().add("PIVEAU_IMPORTING_SEND_LIST_DELAY").add("PIVEAU_IMPORTING_PREPROCESSING")));
         ConfigRetriever retriever = ConfigRetriever.create(vertx, new ConfigRetrieverOptions().addStore(envStoreOptions));
         retriever.getConfig(ar -> {
             if (ar.succeeded()) {
                 defaultDelay = ar.result().getInteger("PIVEAU_IMPORTING_SEND_LIST_DELAY", 8000);
+                preProcessing = ar.result().getBoolean("PIVEAU_IMPORTING_PREPROCESSING", false);
                 startPromise.complete();
             } else {
                 startPromise.fail(ar.cause());
@@ -75,16 +77,21 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         boolean removePrefix = config.path("removePrefix").asBoolean(false);
         boolean precedenceUriRef = config.path("precedenceUriRef").asBoolean(false);
         boolean sendHash = config.path("sendHash").asBoolean(false);
+        boolean applyPreProcessing = config.path("preProcessing").asBoolean(preProcessing);
 
         client.getAbs(address).expect(ResponsePredicate.SC_SUCCESS).send(ar -> {
             if (ar.succeeded()) {
                 HttpResponse<Buffer> response = ar.result();
                 String inputFormat = config.path("inputFormat").asText(response.getHeader("Content-Type"));
-                byte[] parsed = PreProcessing.preProcess(response.bodyAsBuffer().getBytes(), inputFormat, address);
+
+                byte[] content = response.bodyAsBuffer().getBytes();
+                if (applyPreProcessing) {
+                    content = PreProcessing.preProcess(content, inputFormat, address);
+                }
 
                 Model page;
                 try {
-                    page = JenaUtils.read(parsed, Lang.NTRIPLES, address);
+                    page = JenaUtils.read(content, Lang.NTRIPLES, address);
                 } catch (Exception e) {
                     pipeContext.setFailure(e);
                     return;
