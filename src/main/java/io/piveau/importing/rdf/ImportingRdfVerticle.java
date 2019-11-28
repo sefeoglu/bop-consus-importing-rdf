@@ -19,6 +19,8 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.predicate.ResponsePredicate;
+import kotlin.Pair;
+import org.apache.jena.atlas.web.ContentType;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.vocabulary.DCAT;
@@ -51,7 +53,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         retriever.getConfig(ar -> {
             if (ar.succeeded()) {
                 defaultDelay = ar.result().getInteger("PIVEAU_IMPORTING_SEND_LIST_DELAY", 8000);
-                preProcessing = ar.result().getBoolean("PIVEAU_IMPORTING_PREPROCESSING", false);
+                preProcessing = ar.result().getBoolean("PIVEAU_IMPORTING_PREPROCESSING", config().getBoolean("PIVEAU_IMPORTING_PREPROCESSING", false));
                 startPromise.complete();
             } else {
                 startPromise.fail(ar.cause());
@@ -82,12 +84,13 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         client.getAbs(address).expect(ResponsePredicate.SC_SUCCESS).send(ar -> {
             if (ar.succeeded()) {
                 HttpResponse<Buffer> response = ar.result();
-                String inputFormat = config.path("inputFormat").asText(response.getHeader("Content-Type"));
+                String inputFormat = config.path("inputFormat").asText(ContentType.create(response.getHeader("Content-Type")).getContentType());
 
                 byte[] content = response.bodyAsBuffer().getBytes();
                 if (applyPreProcessing) {
-                    content = PreProcessing.preProcess(content, inputFormat, address);
-                    inputFormat = "application/n-triples";
+                    Pair<byte[], String> processed = PreProcessing.preProcess(content, inputFormat, address);
+                    content = processed.getFirst();
+                    inputFormat = processed.getSecond();
                 }
 
                 Model page;
