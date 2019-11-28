@@ -6,7 +6,7 @@
 
     <groupId>io.piveau</groupId>
     <artifactId>piveau-importing-rdf</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
 
     <licenses>
         <license>
@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
-        <vertx.version>3.8.3</vertx.version>
+        <vertx.version>3.8.4</vertx.version>
         <main.verticle>io.piveau.importing.MainVerticle</main.verticle>
     </properties>
 
