@@ -1,5 +1,8 @@
 # ChangeLog
 
+**Fixed:**
+* Unsupported mime types when pre-processing content
+
 ## [1.0.1](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/1.0.1) (2019-11-17)
 
 **Added:**
