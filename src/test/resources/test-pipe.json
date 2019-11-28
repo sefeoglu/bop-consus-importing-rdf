@@ -5,7 +5,7 @@
     "title": "Test Pipe",
     "context": "JUnit5 Tests",
     "transport": "payload",
-    "version": "1.0"
+    "version": "2.0.0"
   },
   "body": {
     "segments": [
@@ -21,8 +21,8 @@
             "address": "http://localhost:8080/pipe"
           },
           "config": {
-            "address": "http://localhost:8098/catalog.rdf",
-            "catalogue": "test-catalogue"
+            "address": "https://opendata.comune.palermo.it/dcat/dcat.php",
+            "catalogue": "palermo"
           }
         }
       }

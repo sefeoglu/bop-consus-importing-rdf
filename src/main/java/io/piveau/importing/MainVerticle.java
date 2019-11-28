@@ -13,7 +13,7 @@ public class MainVerticle extends AbstractVerticle {
 
     @Override
     public void start(Promise<Void> startPromise) {
-        vertx.deployVerticle(ImportingRdfVerticle.class, new DeploymentOptions().setWorker(true), result -> {
+        vertx.deployVerticle(ImportingRdfVerticle.class, new DeploymentOptions().setWorker(true).setConfig(config()), result -> {
             if (result.succeeded()) {
                 PipeConnector.create(vertx, cr -> {
                     if (cr.succeeded()) {
