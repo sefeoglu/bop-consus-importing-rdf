@@ -10,7 +10,7 @@
     <logger name="io.netty" level="warn"/>
     <logger name="io.vertx" level="info"/>
     <logger name="com.hazelcast" level="info"/>
-    <logger name="io.piveau" level="${PIVEAU_LOG_LEVEL:-DEBUG}"/>
+    <logger name="io.piveau" level="${PIVEAU_LOG_LEVEL:-INFO}"/>
     <logger name="pipe" level="error"/>
 
     <root level="info">

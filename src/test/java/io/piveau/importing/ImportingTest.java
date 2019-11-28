@@ -1,5 +1,6 @@
 package io.piveau.importing;
 
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
@@ -20,19 +21,19 @@ class ImportingTest {
 
     @BeforeEach
     void startImporter(Vertx vertx, VertxTestContext testContext) {
-        vertx.deployVerticle(new MainVerticle(), testContext.completing());
+        vertx.deployVerticle(new MainVerticle(), new DeploymentOptions().setConfig(new JsonObject().put("PIVEAU_IMPORTING_PREPROCESSING", true)), testContext.completing());
     }
 
-//    @Test
+    @Test
     @DisplayName("pipe receiving")
-    @Timeout(value=5, timeUnit=TimeUnit.MINUTES)
+    @Timeout(value = 5, timeUnit = TimeUnit.MINUTES)
     void sendPipe(Vertx vertx, VertxTestContext testContext) {
         Checkpoint checkpoint = testContext.checkpoint(2);
         sendPipe("test-pipe.json", vertx, testContext, checkpoint);
     }
 
     private void sendPipe(String pipeFile, Vertx vertx, VertxTestContext testContext, Checkpoint checkpoint) {
-        vertx.fileSystem().readFile("src/test/resources/" + pipeFile, result -> {
+        vertx.fileSystem().readFile(pipeFile, result -> {
             if (result.succeeded()) {
                 JsonObject pipe = new JsonObject(result.result());
                 WebClient client = WebClient.create(vertx);
