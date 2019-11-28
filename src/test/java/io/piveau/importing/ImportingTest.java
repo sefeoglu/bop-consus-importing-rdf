@@ -24,7 +24,7 @@ class ImportingTest {
         vertx.deployVerticle(new MainVerticle(), new DeploymentOptions().setConfig(new JsonObject().put("PIVEAU_IMPORTING_PREPROCESSING", true)), testContext.completing());
     }
 
-    @Test
+//    @Test
     @DisplayName("pipe receiving")
     @Timeout(value = 5, timeUnit = TimeUnit.MINUTES)
     void sendPipe(Vertx vertx, VertxTestContext testContext) {
