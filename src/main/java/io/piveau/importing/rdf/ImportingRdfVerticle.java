@@ -93,6 +93,8 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                     inputFormat = processed.getSecond();
                 }
 
+                log.debug(new String(content));
+
                 Model page;
                 try {
                     page = JenaUtils.read(content, inputFormat, address);
