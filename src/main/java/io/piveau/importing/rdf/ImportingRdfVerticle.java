@@ -65,26 +65,26 @@ public class ImportingRdfVerticle extends AbstractVerticle {
     private void handlePipe(Message<PipeContext> message) {
         PipeContext pipeContext = message.body();
 
-        JsonNode config = pipeContext.getConfig();
+        JsonObject config = pipeContext.getConfig();
         pipeContext.log().info("Import started.");
 
-        String address = config.path("address").asText();
+        String address = config.getString("address");
         fetchPage(address, pipeContext, new ArrayList<>());
     }
 
     private void fetchPage(String address, PipeContext pipeContext, List<String> identifiers) {
-        JsonNode config = pipeContext.getConfig();
-        String outputFormat = config.path("outputFormat").asText("application/n-triples");
+        JsonObject config = pipeContext.getConfig();
+        String outputFormat = config.getString("outputFormat", "application/n-triples");
 
-        boolean removePrefix = config.path("removePrefix").asBoolean(false);
-        boolean precedenceUriRef = config.path("precedenceUriRef").asBoolean(false);
-        boolean sendHash = config.path("sendHash").asBoolean(false);
-        boolean applyPreProcessing = config.path("preProcessing").asBoolean(preProcessing);
+        boolean removePrefix = config.getBoolean("removePrefix", false);
+        boolean precedenceUriRef = config.getBoolean("precedenceUriRef", false);
+        boolean sendHash = config.getBoolean("sendHash", false);
+        boolean applyPreProcessing = config.getBoolean("preProcessing", preProcessing);
 
         client.getAbs(address).expect(ResponsePredicate.SC_SUCCESS).send(ar -> {
             if (ar.succeeded()) {
                 HttpResponse<Buffer> response = ar.result();
-                String inputFormat = config.path("inputFormat").asText(ContentType.create(response.getHeader("Content-Type")).getContentType());
+                String inputFormat = config.getString("inputFormat", ContentType.create(response.getHeader("Content-Type")).getContentType());
 
                 byte[] content = response.bodyAsBuffer().getBytes();
                 if (applyPreProcessing) {
@@ -105,7 +105,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
                 ResIterator it = page.listResourcesWithProperty(RDF.type, DCAT.Dataset);
 
-                boolean brokenHydra = config.path("brokenHydra").asBoolean(false);
+                boolean brokenHydra = config.getBoolean("brokenHydra", false);
                 HydraPaging hydra = HydraPaging.findPaging(page, brokenHydra ? address : null);
 
                 List<Resource> datasets = it.toList();
@@ -122,7 +122,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                                     .put("total", hydra.getTotal() != 0 ? hydra.getTotal() : datasets.size())
                                     .put("counter", identifiers.size())
                                     .put("identifier", identifier)
-                                    .put("catalogue", config.path("catalogue").asText());
+                                    .put("catalogue", config.getString("catalogue"));
                             if (sendHash) {
                                 dataInfo.put("hash", JenaUtils.canonicalHash(model));
                             }
@@ -140,11 +140,11 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                     fetchPage(next, pipeContext, identifiers);
                 } else {
                     pipeContext.log().info("Import metadata finished");
-                    int delay = pipeContext.getConfig().path("sendListDelay").asInt(defaultDelay);
+                    int delay = pipeContext.getConfig().getInteger("sendListDelay", defaultDelay);
                     vertx.setTimer(delay, t -> {
                         ObjectNode info = new ObjectMapper().createObjectNode()
                                 .put("content", "identifierList")
-                                .put("catalogue", config.path("catalogue").asText());
+                                .put("catalogue", config.getString("catalogue"));
                         pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", info).forward(client);
                     });
                 }
