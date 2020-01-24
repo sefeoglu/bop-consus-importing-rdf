@@ -1,6 +1,12 @@
 # ChangeLog
 
-## [1.0.2](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/1.0.1) (2019-11-28)
+## [1.0.3](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/1.0.3) (2020-01-24)
+
+**Changed:**
+* Update connector and piveau-utils for improved pre-processing
+* License
+
+## [1.0.2](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/1.0.2) (2019-11-28)
 
 **Fixed:**
 * Unsupported mime types when pre-processing content
