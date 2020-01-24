@@ -99,10 +99,6 @@ _optional_
 
     The delay in milliseconds before the list of identifiers is send. Take precedence over service configuration (see `PVEAU_IMPORTING_SEND_LIST_DELAY`)
 
-* `sendHash`
-
-    Append a hash value to the dataInfo object. Default is `false` 
-
 * `preProcessing`
 
     Any pre-processing (e.g. URI encoding fixes) should take place. Overwrites importers configuration (see `PIVEAU_IMPORTING_PREPROCESSING`)
