@@ -1,5 +1,8 @@
 # ChangeLog
 
+**Changed:**
+* Update connector lib
+
 ## [1.0.3](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/1.0.3) (2020-01-24)
 
 **Changed:**
