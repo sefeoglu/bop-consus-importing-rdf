@@ -1,6 +1,5 @@
 package io.piveau.importing.rdf;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.piveau.pipe.connector.PipeContext;
@@ -126,7 +125,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                             if (sendHash) {
                                 dataInfo.put("hash", JenaUtils.canonicalHash(model));
                             }
-                            pipeContext.setResult(pretty, outputFormat, dataInfo).forward(client);
+                            pipeContext.setResult(pretty, outputFormat, dataInfo).forward();
                             pipeContext.log().info("Data imported: {}", dataInfo);
                             pipeContext.log().debug("Data content: {}", pretty);
                         }
@@ -145,7 +144,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                         ObjectNode info = new ObjectMapper().createObjectNode()
                                 .put("content", "identifierList")
                                 .put("catalogue", config.getString("catalogue"));
-                        pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", info).forward(client);
+                        pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", info).forward();
                     });
                 }
 
