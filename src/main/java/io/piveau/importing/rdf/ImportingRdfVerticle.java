@@ -10,14 +10,17 @@ import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.streams.WriteStream;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.predicate.ResponsePredicate;
+import io.vertx.ext.web.codec.BodyCodec;
 import kotlin.Pair;
 import org.apache.jena.atlas.web.ContentType;
 import org.apache.jena.rdf.model.*;
@@ -80,7 +83,8 @@ public class ImportingRdfVerticle extends AbstractVerticle {
         boolean sendHash = config.getBoolean("sendHash", false);
         boolean applyPreProcessing = config.getBoolean("preProcessing", preProcessing);
 
-        client.getAbs(address).expect(ResponsePredicate.SC_SUCCESS).send(ar -> {
+        client.getAbs(address)
+                .expect(ResponsePredicate.SC_SUCCESS).send(ar -> {
             if (ar.succeeded()) {
                 HttpResponse<Buffer> response = ar.result();
                 String inputFormat = config.getString("inputFormat", ContentType.create(response.getHeader("Content-Type")).getContentType());
