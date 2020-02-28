@@ -38,6 +38,7 @@
     <logger name="io.netty" level="warn"/>
     <logger name="io.vertx" level="info"/>
     <logger name="com.hazelcast" level="info"/>
+    <logger name="org.apache.jena.riot" level="error"/>
     <logger name="io.piveau" level="${PIVEAU_LOG_LEVEL:-INFO}"/>
 
     <logger name="pipe" level="${PIVEAU_PIPE_LOG_LEVEL:-INFO}" additivity="false">
