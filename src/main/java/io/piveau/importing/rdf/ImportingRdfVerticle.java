@@ -143,13 +143,15 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                     fetchPage(next, pipeContext, identifiers);
                 } else {
                     pipeContext.log().info("Import metadata finished");
-                    int delay = pipeContext.getConfig().getInteger("sendListDelay", defaultDelay);
-                    vertx.setTimer(delay, t -> {
-                        ObjectNode info = new ObjectMapper().createObjectNode()
-                                .put("content", "identifierList")
-                                .put("catalogue", config.getString("catalogue"));
-                        pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", info).forward();
-                    });
+                    if (config.getBoolean("deletion", true)) {
+                        int delay = pipeContext.getConfig().getInteger("sendListDelay", defaultDelay);
+                        vertx.setTimer(delay, t -> {
+                            ObjectNode info = new ObjectMapper().createObjectNode()
+                                    .put("content", "identifierList")
+                                    .put("catalogue", config.getString("catalogue"));
+                            pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", info).forward();
+                        });
+                    }
                 }
 
                 page.close();
