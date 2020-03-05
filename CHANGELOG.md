@@ -1,5 +1,10 @@
 # ChangeLog
 
+## [1.0.5](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/1.0.5) (2020-03-05)
+
+**Added:**
+* Configurable deletion phase
+
 ## [1.0.4](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/1.0.4) (2020-02-28)
 
 **Changed:**
