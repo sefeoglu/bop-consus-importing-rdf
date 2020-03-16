@@ -207,6 +207,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
                                 List<String> identifiers = new ArrayList<>();
                                 List<Resource> datasets = parsedModel.listResourcesWithProperty(RDF.type, DCAT.Dataset).toList();
+                                log.debug("Downloaded and parsed file with {} datasets", datasets.size());
                                 if (datasets.size() > 0) {
                                     Iterator<Resource> iterator = datasets.iterator();
                                     vertx.setPeriodic(10, l -> {
@@ -232,13 +233,17 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                                                 pipeContext.log().debug("Data content: {}", pretty);
                                             }
                                         } else {
+                                            pipeContext.log().info("Import metadata finished");
                                             vertx.cancelTimer(l);
-                                            vertx.setTimer(8000, t -> {
-                                                ObjectNode info = new ObjectMapper().createObjectNode()
-                                                        .put("content", "identifierList")
-                                                        .put("catalogue", config.getString("catalogue"));
-                                                pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", info).forward();
-                                            });
+                                            if (config.getBoolean("deletion", true)) {
+                                                int delay = pipeContext.getConfig().getInteger("sendListDelay", defaultDelay);
+                                                vertx.setTimer(delay, t -> {
+                                                    ObjectNode info = new ObjectMapper().createObjectNode()
+                                                            .put("content", "identifierList")
+                                                            .put("catalogue", config.getString("catalogue"));
+                                                    pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", info).forward();
+                                                });
+                                            }
                                         }
                                     });
                                 } else {
