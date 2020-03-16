@@ -185,25 +185,25 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                         .as(BodyCodec.pipe(file))
                         .expect(ResponsePredicate.SC_SUCCESS).send(fr -> {
                     if (fr.succeeded()) {
-                        try {
-                            String parsedFileName = vertx.fileSystem().createTempFileBlocking("piveau", null);
-                            FileInputStream inputStream = new FileInputStream(tmpFileName);
-                            FileOutputStream parsedOutputStream = new FileOutputStream(parsedFileName);
+//                        try {
+//                            String parsedFileName = vertx.fileSystem().createTempFileBlocking("piveau", null);
+//                            FileInputStream inputStream = new FileInputStream(tmpFileName);
+//                            FileOutputStream parsedOutputStream = new FileOutputStream(parsedFileName);
 
-                            if (applyPreProcessing) {
-                                PreProcessing.preProcess(inputStream, parsedOutputStream, outputFormat, address);
-                            }
+//                            if (applyPreProcessing) {
+//                                PreProcessing.preProcess(inputStream, parsedOutputStream, outputFormat, address);
+//                            }
 
                             Model parsedModel;
                             try {
-                                inputStream.close();
-                                vertx.fileSystem().deleteBlocking(tmpFileName);
+//                                inputStream.close();
+//                                vertx.fileSystem().deleteBlocking(tmpFileName);
 
-                                parsedOutputStream.close();
-                                FileInputStream parsedInputStream = new FileInputStream(parsedFileName);
+//                                parsedOutputStream.close();
+                                FileInputStream parsedInputStream = new FileInputStream(tmpFileName);
                                 parsedModel = JenaUtils.read(parsedInputStream, outputFormat, address);
                                 parsedInputStream.close();
-                                vertx.fileSystem().deleteBlocking(parsedFileName);
+//                                vertx.fileSystem().deleteBlocking(parsedFileName);
 
                                 List<String> identifiers = new ArrayList<>();
                                 List<Resource> datasets = parsedModel.listResourcesWithProperty(RDF.type, DCAT.Dataset).toList();
@@ -252,9 +252,9 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                             } catch (Exception e) {
                                 pipeContext.setFailure(e);
                             }
-                        } catch (FileNotFoundException e) {
-                            pipeContext.setFailure(e);
-                        }
+//                        } catch (FileNotFoundException e) {
+//                            pipeContext.setFailure(e);
+//                        }
                     } else {
                         pipeContext.setFailure(fr.cause());
                     }
