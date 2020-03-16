@@ -207,39 +207,43 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
                                 List<String> identifiers = new ArrayList<>();
                                 List<Resource> datasets = parsedModel.listResourcesWithProperty(RDF.type, DCAT.Dataset).toList();
-                                Iterator<Resource> iterator = datasets.iterator();
-                                vertx.setPeriodic(10, l -> {
-                                    if (iterator.hasNext()) {
-                                        Resource dataset = iterator.next();
-                                        Model datasetModel = JenaUtils.extractResource(dataset);
-                                        String identifier = JenaUtils.findIdentifier(dataset, removePrefix, precedenceUriRef);
-                                        if (identifier == null) {
-                                            pipeContext.log().warn("Could not extract an identifier from {}", dataset.getURI());
-                                        } else {
-                                            identifiers.add(identifier);
-                                            String pretty = JenaUtils.write(datasetModel, outputFormat);
-                                            ObjectNode dataInfo = new ObjectMapper().createObjectNode()
-                                                    .put("total", datasets.size())
-                                                    .put("counter", identifiers.size())
-                                                    .put("identifier", identifier)
-                                                    .put("catalogue", config.getString("catalogue"));
-                                            if (sendHash) {
-                                                dataInfo.put("hash", JenaUtils.canonicalHash(datasetModel));
+                                if (datasets.size() > 0) {
+                                    Iterator<Resource> iterator = datasets.iterator();
+                                    vertx.setPeriodic(10, l -> {
+                                        if (iterator.hasNext()) {
+                                            Resource dataset = iterator.next();
+                                            Model datasetModel = JenaUtils.extractResource(dataset);
+                                            String identifier = JenaUtils.findIdentifier(dataset, removePrefix, precedenceUriRef);
+                                            if (identifier == null) {
+                                                pipeContext.log().warn("Could not extract an identifier from {}", dataset.getURI());
+                                            } else {
+                                                identifiers.add(identifier);
+                                                String pretty = JenaUtils.write(datasetModel, outputFormat);
+                                                ObjectNode dataInfo = new ObjectMapper().createObjectNode()
+                                                        .put("total", datasets.size())
+                                                        .put("counter", identifiers.size())
+                                                        .put("identifier", identifier)
+                                                        .put("catalogue", config.getString("catalogue"));
+                                                if (sendHash) {
+                                                    dataInfo.put("hash", JenaUtils.canonicalHash(datasetModel));
+                                                }
+                                                pipeContext.setResult(pretty, outputFormat, dataInfo).forward();
+                                                pipeContext.log().info("Data imported: {}", dataInfo);
+                                                pipeContext.log().debug("Data content: {}", pretty);
                                             }
-                                            pipeContext.setResult(pretty, outputFormat, dataInfo).forward();
-                                            pipeContext.log().info("Data imported: {}", dataInfo);
-                                            pipeContext.log().debug("Data content: {}", pretty);
+                                        } else {
+                                            vertx.cancelTimer(l);
+                                            vertx.setTimer(8000, t -> {
+                                                ObjectNode info = new ObjectMapper().createObjectNode()
+                                                        .put("content", "identifierList")
+                                                        .put("catalogue", config.getString("catalogue"));
+                                                pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", info).forward();
+                                            });
                                         }
-                                    } else {
-                                        vertx.cancelTimer(l);
-                                        vertx.setTimer(8000, t -> {
-                                            ObjectNode info = new ObjectMapper().createObjectNode()
-                                                    .put("content", "identifierList")
-                                                    .put("catalogue", config.getString("catalogue"));
-                                            pipeContext.setResult(new JsonArray(identifiers).encodePrettily(), "application/json", info).forward();
-                                        });
-                                    }
-                                });
+                                    });
+                                } else {
+                                    pipeContext.setFailure("No datasets found in dump file");
+                                }
                             } catch (Exception e) {
                                 pipeContext.setFailure(e);
                             }
