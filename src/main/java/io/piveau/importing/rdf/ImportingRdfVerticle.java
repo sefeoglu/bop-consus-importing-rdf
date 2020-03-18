@@ -194,6 +194,8 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 //                                PreProcessing.preProcess(inputStream, parsedOutputStream, outputFormat, address);
 //                            }
 
+                            String inputFormat = config.getString("inputFormat", ContentType.create(fr.result().getHeader("Content-Type")).getContentType());
+
                             Model parsedModel;
                             try {
 //                                inputStream.close();
@@ -201,7 +203,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
 //                                parsedOutputStream.close();
                                 FileInputStream parsedInputStream = new FileInputStream(tmpFileName);
-                                parsedModel = JenaUtils.read(parsedInputStream, outputFormat, address);
+                                parsedModel = JenaUtils.read(parsedInputStream, inputFormat, address);
                                 parsedInputStream.close();
 //                                vertx.fileSystem().deleteBlocking(parsedFileName);
 
