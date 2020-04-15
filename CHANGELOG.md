@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-**Changed:**
+## [1.1.0](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/1.1.0) (2020-04-15)
+
+**Fixed:**
 * Use fixed pre-processing from piveau utils
 
 **Added:**
