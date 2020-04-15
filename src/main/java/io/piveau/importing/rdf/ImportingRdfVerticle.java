@@ -25,7 +25,6 @@ import kotlin.Pair;
 import org.apache.jena.atlas.web.ContentType;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.vocabulary.DCAT;
 import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
@@ -193,9 +192,9 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
                             String inputFormat = config.getString("inputFormat", ContentType.create(fr.result().getHeader("Content-Type")).getContentType());
 
-//                            if (applyPreProcessing) {
-                            PreProcessing.preProcess(inputStream, parsedOutputStream, inputFormat, address);
-//                            }
+                            if (applyPreProcessing) {
+                                PreProcessing.preProcess(inputStream, parsedOutputStream, inputFormat, address);
+                            }
 
                             Model parsedModel;
                             try {
