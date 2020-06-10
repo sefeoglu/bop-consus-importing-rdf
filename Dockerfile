@@ -1,6 +1,6 @@
 FROM openjdk:11-jre
 
-ENV VERTICLE_FILE importing-rdf.jar
+ENV VERTICLE_FILE piveau-importing-rdf.jar
 
 # Set the location of the verticles
 ENV VERTICLE_HOME /usr/verticles
