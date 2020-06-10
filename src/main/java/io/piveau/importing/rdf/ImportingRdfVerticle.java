@@ -2,9 +2,9 @@ package io.piveau.importing.rdf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.piveau.pipe.connector.PipeContext;
+import io.piveau.pipe.PipeContext;
+import io.piveau.rdf.HydraPaging;
 import io.piveau.rdf.PreProcessing;
-import io.piveau.utils.HydraPaging;
 import io.piveau.utils.JenaUtils;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
