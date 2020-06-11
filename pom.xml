@@ -5,8 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.piveau</groupId>
-    <artifactId>piveau-importing-rdf</artifactId>
+    <artifactId>importing-rdf</artifactId>
     <version>1.1.1-SNAPSHOT</version>
+
+    <name>piveau-consus-importing-rdf</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
