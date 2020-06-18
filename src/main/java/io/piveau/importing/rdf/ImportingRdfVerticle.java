@@ -145,7 +145,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                     }
                 });
 
-                String next = hydra.next();
+                String next = hydra.getNext();
                 if (next != null) {
                     fetchPage(next, pipeContext, identifiers);
                 } else {
