@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## [1.1.1](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/1.1.1) (2020-06-18)
+
+**Changed:**
+* Pipe startTime
+
 ## [1.1.0](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/1.1.0) (2020-04-15)
 
 **Fixed:**
