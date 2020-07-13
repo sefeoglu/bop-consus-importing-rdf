@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+**Fixed:**
+* Handle missing content type
+ 
 ## [1.1.1](https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf/tags/1.1.1) (2020-06-18)
 
 **Changed:**

@@ -94,7 +94,8 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                 .expect(ResponsePredicate.SC_SUCCESS).send(ar -> {
             if (ar.succeeded()) {
                 HttpResponse<Buffer> response = ar.result();
-                String inputFormat = config.getString("inputFormat", ContentType.create(response.getHeader("Content-Type")).getContentType());
+                String contentType = response.getHeader("Content-Type") != null ? ContentType.create(response.getHeader("Content-Type")).getContentType() : "application/rdf+xml";
+                String inputFormat = config.getString("inputFormat", contentType);
 
                 byte[] content = response.bodyAsBuffer().getBytes();
                 if (applyPreProcessing) {
