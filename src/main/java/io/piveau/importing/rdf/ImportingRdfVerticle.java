@@ -87,14 +87,13 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
         boolean removePrefix = config.getBoolean("removePrefix", false);
         boolean precedenceUriRef = config.getBoolean("precedenceUriRef", false);
-        boolean sendHash = config.getBoolean("sendHash", false);
         boolean applyPreProcessing = config.getBoolean("preProcessing", preProcessing);
 
         client.getAbs(address)
                 .expect(ResponsePredicate.SC_SUCCESS).send(ar -> {
             if (ar.succeeded()) {
                 HttpResponse<Buffer> response = ar.result();
-                String contentType = response.getHeader("Content-Type") != null ? ContentType.create(response.getHeader("Content-Type")).getContentType() : "application/rdf+xml";
+                String contentType = response.getHeader("Content-Type") != null ? ContentType.create(response.getHeader("Content-Type")).getContentTypeStr() : "application/rdf+xml";
                 String inputFormat = config.getString("inputFormat", contentType);
 
                 byte[] content = response.bodyAsBuffer().getBytes();
@@ -112,13 +111,13 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                     return;
                 }
 
-                log.debug(JenaUtils.write(page, Lang.TURTLE));
+                log.debug("{}", JenaUtils.write(page, Lang.TURTLE));
 
-                ResIterator it = page.listResourcesWithProperty(RDF.type, DCAT.Dataset);
 
                 boolean brokenHydra = config.getBoolean("brokenHydra", false);
                 HydraPaging hydra = HydraPaging.findPaging(page, brokenHydra ? address : null);
 
+                ResIterator it = page.listResourcesWithProperty(RDF.type, DCAT.Dataset);
                 List<Resource> datasets = it.toList();
                 datasets.forEach(resource -> {
                     try {
@@ -134,9 +133,6 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                                     .put("counter", identifiers.size())
                                     .put("identifier", identifier)
                                     .put("catalogue", config.getString("catalogue"));
-                            if (sendHash) {
-                                dataInfo.put("hash", JenaUtils.canonicalHash(model));
-                            }
                             pipeContext.setResult(pretty, outputFormat, dataInfo).forward();
                             pipeContext.log().info("Data imported: {}", dataInfo);
                             pipeContext.log().debug("Data content: {}", pretty);
@@ -175,7 +171,6 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
         boolean removePrefix = config.getBoolean("removePrefix", false);
         boolean precedenceUriRef = config.getBoolean("precedenceUriRef", false);
-        boolean sendHash = config.getBoolean("sendHash", false);
         boolean applyPreProcessing = config.getBoolean("preProcessing", preProcessing);
 
         String tmpFileName = vertx.fileSystem().createTempFileBlocking("piveau", null);
@@ -191,7 +186,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                             String parsedFileName = vertx.fileSystem().createTempFileBlocking("piveau", null);
                             FileOutputStream parsedOutputStream = new FileOutputStream(parsedFileName);
 
-                            String inputFormat = config.getString("inputFormat", ContentType.create(fr.result().getHeader("Content-Type")).getContentType());
+                            String inputFormat = config.getString("inputFormat", ContentType.create(fr.result().getHeader("Content-Type")).getContentTypeStr());
 
                             if (applyPreProcessing) {
                                 PreProcessing.preProcess(inputStream, parsedOutputStream, inputFormat, address);
@@ -228,9 +223,6 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                                                         .put("counter", identifiers.size())
                                                         .put("identifier", identifier)
                                                         .put("catalogue", config.getString("catalogue"));
-                                                if (sendHash) {
-                                                    dataInfo.put("hash", JenaUtils.canonicalHash(datasetModel));
-                                                }
                                                 pipeContext.setResult(pretty, outputFormat, dataInfo).forward();
                                                 pipeContext.log().info("Data imported: {}", dataInfo);
                                                 pipeContext.log().debug("Data content: {}", pretty);
