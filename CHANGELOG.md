@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+**Changed:**
+* Switch to kotlin and kotlin flows
+
 ## [1.1.2](https://gitlab.fokus.fraunhofer.de/piveau/consus/piveau-consus-importing-rdf/tags/1.1.2) (2020-07-13)
 
 **Fixed:**
