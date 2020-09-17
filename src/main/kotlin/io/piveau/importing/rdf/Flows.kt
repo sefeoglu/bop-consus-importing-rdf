@@ -39,7 +39,7 @@ class DownloadSource(private val client: WebClient, private val config: JsonObje
 
                         val page = if (applyPreProcessing) {
                             val (content, finalContentType) = preProcess(response.body().bytes, contentType, nextLink)
-                            content.toByteArray().toModel(finalContentType)
+                            content.toByteArray().toModel(finalContentType, nextLink)
                         } else {
                             response.body().bytes.toModel(contentType, nextLink)
                         }
@@ -50,10 +50,10 @@ class DownloadSource(private val client: WebClient, private val config: JsonObje
 
                         hydraPaging.next
                     } else {
-                        throw Throwable("${response.statusCode()} - ${response.statusMessage()}:\n${response.bodyAsString()}")
+                        throw Throwable("$nextLink: ${response.statusCode()} - ${response.statusMessage()}\n${response.bodyAsString()}")
                     }
                 }
-                else -> throw Throwable("${response.statusCode()} - ${response.statusMessage()}:\n${response.bodyAsString()}")
+                else -> throw Throwable("$nextLink: ${response.statusCode()} - ${response.statusMessage()}\n${response.bodyAsString()}")
             }
         } while (nextLink != null)
     }
@@ -79,13 +79,4 @@ class DownloadSource(private val client: WebClient, private val config: JsonObje
     }
 
 }
-
-val String.isRDF: Boolean
-    get() = this in listOf(
-        "application/rdf+xml",
-        "application/ld+json",
-        "application/n-triples",
-        "text/turtle",
-        "text/n3"
-    )
 
