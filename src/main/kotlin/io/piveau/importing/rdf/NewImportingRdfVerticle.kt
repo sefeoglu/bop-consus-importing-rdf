@@ -71,7 +71,7 @@ class NewImportingRdfVerticle : CoroutineVerticle() {
                             }
                             .collect { (dataset, dataInfo) ->
                                 identifiers.add(dataInfo.getString("identifier"))
-                                dataInfo.put("catalogue", config.getString("catalogue")).put("counter", identifiers.size)
+                                dataInfo.put("counter", identifiers.size).put("catalogue", config.getString("catalogue"))
                                 dataset.asString(outputFormat).let {
                                     setResult(it, outputFormat, dataInfo).forward()
                                     log.info("Data imported: {}", dataInfo)
