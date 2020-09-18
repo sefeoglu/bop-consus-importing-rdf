@@ -98,7 +98,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
 
                 byte[] content = response.bodyAsBuffer().getBytes();
                 if (applyPreProcessing) {
-                    Pair<ByteArrayOutputStream, String> processed = PreProcessing.preProcess(content, inputFormat, address);
+                    Pair<ByteArrayOutputStream, String> processed = PreProcessing.preProcess(content, inputFormat);
                     content = processed.getFirst().toByteArray();
                     inputFormat = processed.getSecond();
                 }
@@ -189,7 +189,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                             String inputFormat = config.getString("inputFormat", ContentType.create(fr.result().getHeader("Content-Type")).getContentTypeStr());
 
                             if (applyPreProcessing) {
-                                PreProcessing.preProcess(inputStream, parsedOutputStream, inputFormat, address);
+                                PreProcessing.preProcess(inputStream, parsedOutputStream, inputFormat, "");
                             }
 
                             Model parsedModel;
