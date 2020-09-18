@@ -1,9 +1,9 @@
 {
   "header": {
-    "id": "4ff7a0a7-2fc3-4e84-a6ef-a83ab55b698c",
-    "name": "test-pipe",
-    "title": "Test Pipe",
-    "context": "JUnit5 Tests",
+    "id": "2c5cacb7-55e3-489e-92b5-c3e9fa0732d2",
+    "name": "avaandmete-portaal",
+    "title": "Harvesting - Avaandmete portaal",
+    "context": "EDP2",
     "transport": "payload",
     "version": "2.0.0"
   },
@@ -17,12 +17,11 @@
           "processed": false
         },
         "body": {
-          "endpoint": {
-            "address": "http://localhost:8080/pipe"
-          },
           "config": {
-            "address": "https://opendata.comune.palermo.it/dcat/dcat.php",
-            "catalogue": "palermo"
+            "address": "https://opendata.riik.ee/data.json",
+            "catalogue": "avaandmete-portaal",
+            "preProcessing": true,
+            "inputFormat": "application/ld+json"
           }
         }
       }

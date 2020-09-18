@@ -9,6 +9,7 @@ import io.vertx.junit5.Timeout;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,9 +25,10 @@ class ImportingTest {
         vertx.deployVerticle(new MainVerticle(), new DeploymentOptions().setConfig(new JsonObject().put("PIVEAU_IMPORTING_PREPROCESSING", true)), testContext.completing());
     }
 
-//    @Test
+    @Test
     @DisplayName("pipe receiving")
     @Timeout(value = 5, timeUnit = TimeUnit.MINUTES)
+    @Disabled
     void sendPipe(Vertx vertx, VertxTestContext testContext) {
         Checkpoint checkpoint = testContext.checkpoint(2);
         sendPipe("test-pipe.json", vertx, testContext, checkpoint);

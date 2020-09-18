@@ -38,10 +38,10 @@ class DownloadSource(private val client: WebClient, private val config: JsonObje
                     if (contentType.isRDF) {
 
                         val page = if (applyPreProcessing) {
-                            val (content, finalContentType) = preProcess(response.body().bytes, contentType, nextLink)
-                            content.toByteArray().toModel(finalContentType, nextLink)
+                            val (content, finalContentType) = preProcess(response.body().bytes, contentType)
+                            content.toByteArray().toModel(finalContentType, address)
                         } else {
-                            response.body().bytes.toModel(contentType, nextLink)
+                            response.body().bytes.toModel(contentType, address)
                         }
 
                         val hydraPaging = HydraPaging.findPaging(page, if (brokenHydra) address else null)
