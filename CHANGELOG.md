@@ -2,8 +2,13 @@
 
 ## Unreleased
 
+## [1.2.0](https://gitlab.fokus.fraunhofer.de/piveau/consus/piveau-consus-importing-rdf/tags/1.1.2) (2020-09-19)
+
 **Changed:**
 * Switch to kotlin and kotlin flows
+
+**Added:**
+* Use new pre-processing for JSON-LD
 
 ## [1.1.2](https://gitlab.fokus.fraunhofer.de/piveau/consus/piveau-consus-importing-rdf/tags/1.1.2) (2020-07-13)
 
