@@ -28,7 +28,7 @@ class DownloadSource(private val client: WebClient, private val config: JsonObje
         var nextLink: String? = address
         val inputFormat = pipeContext.config.getString("inputFormat")
         val applyPreProcessing = pipeContext.config.getBoolean("preProcessing", preProcessing)
-        val brokenHydra = config.getBoolean("brokenHydra", false)
+        val brokenHydra = pipeContext.config.getBoolean("brokenHydra", false)
 
         do {
             val response = client.getAbs(nextLink as String).sendAwait()
@@ -50,7 +50,7 @@ class DownloadSource(private val client: WebClient, private val config: JsonObje
 
                         hydraPaging.next
                     } else {
-                        throw Throwable("$nextLink: ${response.statusCode()} - ${response.statusMessage()}\n${response.bodyAsString()}")
+                        throw Throwable("$nextLink: Content-Type $contentType is not an RDF content type. Content:\n${response.bodyAsString()}")
                     }
                 }
                 else -> throw Throwable("$nextLink: ${response.statusCode()} - ${response.statusMessage()}\n${response.bodyAsString()}")
@@ -63,16 +63,20 @@ class DownloadSource(private val client: WebClient, private val config: JsonObje
             val removePrefix = pipeContext.config.getBoolean("removePrefix", false)
             val precedenceUriRef = pipeContext.config.getBoolean("precedenceUriRef", false)
 
-            pagesFlow(address, pipeContext).collect { (page, total) ->
-                page.listResourcesWithProperty(RDF.type, DCAT.Dataset).forEach {
-                    JenaUtils.findIdentifier(it, removePrefix, precedenceUriRef)?.let { id ->
-                        val dataInfo = JsonObject()
-                            .put("total", total)
-                            .put("identifier", id)
+            if (pipeContext.config.getBoolean("useTempFile", false)) {
+                throw NotImplementedError("Using temp file is currently not supported")
+            } else {
+                pagesFlow(address, pipeContext).collect { (page, total) ->
+                    page.listResourcesWithProperty(RDF.type, DCAT.Dataset).forEach {
+                        JenaUtils.findIdentifier(it, removePrefix, precedenceUriRef)?.let { id ->
+                            val dataInfo = JsonObject()
+                                .put("total", total)
+                                .put("identifier", id)
 
-                        emit(Dataset(it.extractAsModel() ?: ModelFactory.createDefaultModel(), dataInfo))
+                            emit(Dataset(it.extractAsModel() ?: ModelFactory.createDefaultModel(), dataInfo))
 
-                    } ?: pipeContext.log().warn("Could not extract an identifier from {}", it.uri)
+                        } ?: pipeContext.log.warn("Could not extract an identifier from {}", it.uri)
+                    }
                 }
             }
         }

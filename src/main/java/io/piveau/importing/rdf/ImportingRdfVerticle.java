@@ -189,7 +189,7 @@ public class ImportingRdfVerticle extends AbstractVerticle {
                             String inputFormat = config.getString("inputFormat", ContentType.create(fr.result().getHeader("Content-Type")).getContentTypeStr());
 
                             if (applyPreProcessing) {
-                                PreProcessing.preProcess(inputStream, parsedOutputStream, inputFormat, "");
+                                PreProcessing.preProcess(inputStream, parsedOutputStream, inputFormat, address);
                             }
 
                             Model parsedModel;
