@@ -1,8 +1,8 @@
 {
   "header": {
     "id": "2c5cacb7-55e3-489e-92b5-c3e9fa0732d2",
-    "name": "avaandmete-portaal",
-    "title": "Harvesting - Avaandmete portaal",
+    "name": "data-gov-lv",
+    "title": "Harvesting - data.gov.lv",
     "context": "EDP2",
     "transport": "payload",
     "version": "2.0.0"
@@ -18,10 +18,9 @@
         },
         "body": {
           "config": {
-            "address": "https://opendata.riik.ee/data.json",
-            "catalogue": "avaandmete-portaal",
-            "preProcessing": true,
-            "inputFormat": "application/ld+json"
+            "address": "https://data.gov.lv/dati/catalog.rdf",
+            "catalogue": "data-gov-lv",
+            "preProcessing": true
           }
         }
       }

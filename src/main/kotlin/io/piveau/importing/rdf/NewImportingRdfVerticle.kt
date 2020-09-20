@@ -51,41 +51,36 @@ class NewImportingRdfVerticle : CoroutineVerticle() {
                 val catalogue = config.getString("catalogue")
 
                 val address = config.getString("address")
-                when (config.getBoolean("useTempFile", false)) {
-                    true -> downloadFile(address, this)
-                    false -> {
-                        val identifiers = mutableListOf<String>()
-                        downloadSource.datasetsFlow(address, this)
-                            .onCompletion {
-                                when {
-                                    it != null -> setFailure(it)
-                                    else -> {
-                                        delay(delay)
-                                        val dataInfo = JsonObject()
-                                            .put("content", "identifierList")
-                                            .put("catalogue", catalogue)
-                                        setResult(JsonArray(identifiers).encodePrettily(), "application/json", dataInfo).forward()
-                                        log.info("Importing finished")
-                                    }
-                                }
+                val identifiers = mutableListOf<String>()
+                downloadSource.datasetsFlow(address, this)
+                    .onCompletion {
+                        when {
+                            it != null -> setFailure(it)
+                            else -> {
+                                delay(delay)
+                                val dataInfo = JsonObject()
+                                    .put("content", "identifierList")
+                                    .put("catalogue", catalogue)
+                                setResult(
+                                    JsonArray(identifiers).encodePrettily(),
+                                    "application/json",
+                                    dataInfo
+                                ).forward()
+                                log.info("Importing finished")
                             }
-                            .collect { (dataset, dataInfo) ->
-                                identifiers.add(dataInfo.getString("identifier"))
-                                dataInfo.put("counter", identifiers.size).put("catalogue", config.getString("catalogue"))
-                                dataset.asString(outputFormat).let {
-                                    setResult(it, outputFormat, dataInfo).forward()
-                                    log.info("Data imported: {}", dataInfo)
-                                    log.debug("Data content: {}", it)
-                                }
-                            }
+                        }
                     }
-                }
+                    .collect { (dataset, dataInfo) ->
+                        identifiers.add(dataInfo.getString("identifier"))
+                        dataInfo.put("counter", identifiers.size).put("catalogue", config.getString("catalogue"))
+                        dataset.asString(outputFormat).let {
+                            setResult(it, outputFormat, dataInfo).forward()
+                            log.info("Data imported: {}", dataInfo)
+                            log.debug("Data content: {}", it)
+                        }
+                    }
             }
         }
-    }
-
-    private fun downloadFile(address: String, pipeContext: PipeContext) {
-
     }
 
     companion object {
