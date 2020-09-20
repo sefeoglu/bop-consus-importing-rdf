@@ -2,7 +2,18 @@
 
 ## Unreleased
 
-## [1.2.0](https://gitlab.fokus.fraunhofer.de/piveau/consus/piveau-consus-importing-rdf/tags/1.1.2) (2020-09-19)
+## [1.2.1](https://gitlab.fokus.fraunhofer.de/piveau/consus/piveau-consus-importing-rdf/tags/1.2.1) (2020-09-20)
+
+**Fixed:**
+* brokenHydra calculation
+
+**Changed:**
+* Error message for not rdf content
+
+**Added:**
+* Temp file currently not supported exception
+ 
+## [1.2.0](https://gitlab.fokus.fraunhofer.de/piveau/consus/piveau-consus-importing-rdf/tags/1.2.0) (2020-09-19)
 
 **Changed:**
 * Switch to kotlin and kotlin flows
