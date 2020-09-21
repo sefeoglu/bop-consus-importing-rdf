@@ -1,4 +1,4 @@
-FROM openjdk:14-jre
+FROM openjdk:14-jdk
 
 ENV VERTICLE_FILE importing-rdf.jar
 
