@@ -7,7 +7,7 @@ ENV VERTICLE_HOME /usr/verticles
 
 EXPOSE 8080
 
-RUN groupadd vertx && useradd -g vertx
+RUN groupadd vertx && useradd -g vertx vertx
 
 # Copy your fat jar to the container
 COPY target/$VERTICLE_FILE $VERTICLE_HOME/
