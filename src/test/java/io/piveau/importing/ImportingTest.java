@@ -22,7 +22,7 @@ class ImportingTest {
 
     @BeforeEach
     void startImporter(Vertx vertx, VertxTestContext testContext) {
-        vertx.deployVerticle(new MainVerticle(), new DeploymentOptions().setConfig(new JsonObject().put("PIVEAU_IMPORTING_PREPROCESSING", true)), testContext.completing());
+        vertx.deployVerticle(new MainVerticle(), new DeploymentOptions(), testContext.completing());
     }
 
     @Test

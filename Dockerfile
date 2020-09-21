@@ -1,4 +1,4 @@
-FROM openjdk:11-jre
+FROM openjdk:14-jdk
 
 ENV VERTICLE_FILE importing-rdf.jar
 
@@ -7,7 +7,7 @@ ENV VERTICLE_HOME /usr/verticles
 
 EXPOSE 8080
 
-RUN addgroup --system vertx && adduser --system --group vertx
+RUN groupadd vertx && useradd -g vertx vertx
 
 # Copy your fat jar to the container
 COPY target/$VERTICLE_FILE $VERTICLE_HOME/

@@ -20,7 +20,7 @@
           "config": {
             "address": "https://data.gov.lv/dati/catalog.rdf",
             "catalogue": "data-gov-lv",
-            "preProcessing": true
+            "brokenHydra": true
           }
         }
       }
