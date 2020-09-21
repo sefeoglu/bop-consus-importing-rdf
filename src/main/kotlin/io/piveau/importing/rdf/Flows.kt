@@ -38,7 +38,7 @@ class DownloadSource(private val client: WebClient, private val config: JsonObje
                     if (contentType.isRDF) {
 
                         val page = if (applyPreProcessing) {
-                            val (content, finalContentType) = preProcess(response.body().bytes, contentType)
+                            val (content, finalContentType) = preProcess(response.body().bytes, contentType, address)
                             content.toByteArray().toModel(finalContentType, address)
                         } else {
                             response.body().bytes.toModel(contentType, address)

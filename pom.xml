@@ -6,7 +6,7 @@
 
     <groupId>io.piveau.consus</groupId>
     <artifactId>importing-rdf</artifactId>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.2.2</version>
 
     <name>piveau-consus-importing-rdf</name>
 
@@ -95,7 +95,7 @@
         <dependency>
             <groupId>io.piveau.utils</groupId>
             <artifactId>piveau-utils</artifactId>
-            <version>4.3.1-SNAPSHOT</version>
+            <version>4.3.1</version>
         </dependency>
 
         <dependency>
