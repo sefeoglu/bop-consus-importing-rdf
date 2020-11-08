@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+**Changed:**
+* Log with datum
+
 ## [1.2.2](https://gitlab.fokus.fraunhofer.de/piveau/consus/piveau-consus-importing-rdf/tags/1.2.2) (2020-09-21)
 
 **Fixed:**

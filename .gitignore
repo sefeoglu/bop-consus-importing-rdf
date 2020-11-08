@@ -1,7 +1,6 @@
 *.iml
 .vertx/
 ./logs/
-./src/main/generated/
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Maven template
