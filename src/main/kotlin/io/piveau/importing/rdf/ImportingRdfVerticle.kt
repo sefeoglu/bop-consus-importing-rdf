@@ -18,7 +18,7 @@ import kotlin.properties.Delegates
 
 @FlowPreview
 @ExperimentalCoroutinesApi
-class NewImportingRdfVerticle : CoroutineVerticle() {
+class ImportingRdfVerticle : CoroutineVerticle() {
 
     private lateinit var downloadSource: DownloadSource
     private var defaultDelay by Delegates.notNull<Long>()
@@ -36,7 +36,7 @@ class NewImportingRdfVerticle : CoroutineVerticle() {
             )
         ConfigRetriever.create(vertx, ConfigRetrieverOptions().addStore(envStoreOptions))
             .getConfigAwait().let { config ->
-                downloadSource = DownloadSource(WebClient.create(vertx), config)
+                downloadSource = DownloadSource(vertx, WebClient.create(vertx), config)
                 defaultDelay = config.getLong("PIVEAU_IMPORTING_SEND_LIST_DELAY", 8000L)
             }
     }
@@ -52,6 +52,7 @@ class NewImportingRdfVerticle : CoroutineVerticle() {
 
                 val address = config.getString("address")
                 val identifiers = mutableListOf<String>()
+
                 downloadSource.datasetsFlow(address, this)
                     .onCompletion {
                         when {
@@ -78,6 +79,7 @@ class NewImportingRdfVerticle : CoroutineVerticle() {
                             log.info("Data imported: {}", dataInfo)
                             log.debug("Data content: {}", it)
                         }
+                        dataset.close()
                     }
             }
         }
