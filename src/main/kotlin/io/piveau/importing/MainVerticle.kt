@@ -4,12 +4,8 @@ import io.piveau.importing.rdf.ImportingRdfVerticle
 import io.piveau.pipe.connector.PipeConnector
 import io.vertx.core.DeploymentOptions
 import io.vertx.core.Launcher
-import io.vertx.kotlin.core.deployVerticleAwait
-import io.vertx.kotlin.core.file.existsAwait
-import io.vertx.kotlin.core.file.mkdirAwait
-import io.vertx.kotlin.core.file.propsAwait
 import io.vertx.kotlin.coroutines.CoroutineVerticle
-import io.vertx.kotlin.coroutines.awaitResult
+import io.vertx.kotlin.coroutines.await
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import java.nio.file.FileAlreadyExistsException
@@ -20,17 +16,15 @@ class MainVerticle : CoroutineVerticle() {
 
     override suspend fun start() {
 
-        if (!vertx.fileSystem().existsAwait("tmp")) {
-            vertx.fileSystem().mkdirAwait("tmp")
-        } else if (!vertx.fileSystem().propsAwait("tmp").isDirectory) {
+        if (!vertx.fileSystem().exists("tmp").await()) {
+            vertx.fileSystem().mkdir("tmp").await()
+        } else if (!vertx.fileSystem().props("tmp").await().isDirectory) {
             throw FileAlreadyExistsException("tmp")
         }
 
-        vertx.deployVerticleAwait(ImportingRdfVerticle::class.qualifiedName ?: "", DeploymentOptions().setWorker(true))
+        vertx.deployVerticle(ImportingRdfVerticle::class.qualifiedName ?: "", DeploymentOptions().setWorker(true)).await()
 
-        awaitResult<PipeConnector> { PipeConnector.create(vertx, DeploymentOptions(), it) }.publishTo(
-            ImportingRdfVerticle.ADDRESS
-        )
+        PipeConnector.create(vertx, DeploymentOptions()).await().publishTo(ImportingRdfVerticle.ADDRESS)
     }
 
 }
