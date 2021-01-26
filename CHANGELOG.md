@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [1.4.0](https://gitlab.fokus.fraunhofer.de/piveau/consus/piveau-consus-importing-rdf/tags/1.4.0) (2021-01-26)
+
 **Changed:**
 * Switched to Vert.x 4.0.0
 
