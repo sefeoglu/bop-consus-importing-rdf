@@ -1,9 +1,7 @@
 package io.piveau.importing
 
-import io.vertx.core.AsyncResult
 import io.vertx.core.DeploymentOptions
 import io.vertx.core.Vertx
-import io.vertx.core.buffer.Buffer
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
 import io.vertx.junit5.Checkpoint
@@ -40,7 +38,7 @@ internal class ImportingTest {
     }
 
     private fun sendPipe(pipeFile: String, vertx: Vertx, testContext: VertxTestContext, checkpoint: Checkpoint) {
-        vertx.fileSystem().readFile(pipeFile) { result: AsyncResult<Buffer?> ->
+        vertx.fileSystem().readFile(pipeFile) { result ->
             if (result.succeeded()) {
                 val pipe = JsonObject(result.result())
                 val client = WebClient.create(vertx)

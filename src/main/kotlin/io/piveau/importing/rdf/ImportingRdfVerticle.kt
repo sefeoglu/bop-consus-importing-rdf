@@ -11,6 +11,7 @@ import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.config.getConfigAwait
 import io.vertx.kotlin.coroutines.CoroutineVerticle
+import io.vertx.kotlin.coroutines.await
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
@@ -34,11 +35,10 @@ class ImportingRdfVerticle : CoroutineVerticle() {
                     JsonArray().add("PIVEAU_IMPORTING_SEND_LIST_DELAY").add("PIVEAU_IMPORTING_PREPROCESSING")
                 )
             )
-        ConfigRetriever.create(vertx, ConfigRetrieverOptions().addStore(envStoreOptions))
-            .getConfigAwait().let { config ->
-                downloadSource = DownloadSource(vertx, WebClient.create(vertx), config)
-                defaultDelay = config.getLong("PIVEAU_IMPORTING_SEND_LIST_DELAY", 8000L)
-            }
+
+        val config = ConfigRetriever.create(vertx, ConfigRetrieverOptions().addStore(envStoreOptions)).config.await()
+        downloadSource = DownloadSource(vertx, WebClient.create(vertx), config)
+        defaultDelay = config.getLong("PIVEAU_IMPORTING_SEND_LIST_DELAY", 8000L)
     }
 
     private fun handlePipe(message: Message<PipeContext>) {
