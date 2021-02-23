@@ -30,6 +30,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
 
     private fun pagesFlow(address: String, pipeContext: PipeContext): Flow<Page> = flow {
         var nextLink: String? = address
+        val accept = pipeContext.config.getString("accept")
         val inputFormat = pipeContext.config.getString("inputFormat")
         val applyPreProcessing = pipeContext.config.getBoolean("preProcessing", preProcessing)
         val brokenHydra = pipeContext.config.getBoolean("brokenHydra", false)
@@ -38,7 +39,11 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
             val tmpFileName: String = vertx.fileSystem().createTempFileBlocking("tmp", "piveau", ".tmp", null)
             val stream = vertx.fileSystem().open(tmpFileName, OpenOptions().setWrite(true)).await()
 
-            val response = client.getAbs(nextLink as String).`as`(BodyCodec.pipe(stream, true)).send().await()
+            val request = client.getAbs(nextLink as String).`as`(BodyCodec.pipe(stream, true))
+            if (accept != null) {
+                request.putHeader("Accept", accept)
+            }
+            val response = request.send().await()
 
             nextLink = when (response.statusCode()) {
                 in 200..299 -> {
