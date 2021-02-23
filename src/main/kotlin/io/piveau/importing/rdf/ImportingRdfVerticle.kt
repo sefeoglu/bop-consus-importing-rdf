@@ -9,11 +9,11 @@ import io.vertx.core.eventbus.Message
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
-import io.vertx.kotlin.config.getConfigAwait
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.onCompletion
 import kotlin.properties.Delegates
 
@@ -53,7 +53,10 @@ class ImportingRdfVerticle : CoroutineVerticle() {
                 val address = config.getString("address")
                 val identifiers = mutableListOf<String>()
 
-                downloadSource.datasetsFlow(address, this)
+                downloadSource.pagesFlow(address, this)
+                    .flatMapConcat {
+                        downloadSource.datasetsFlow(it, this)
+                    }
                     .onCompletion {
                         when {
                             it != null -> setFailure(it)
@@ -81,6 +84,7 @@ class ImportingRdfVerticle : CoroutineVerticle() {
                         }
                         dataset.close()
                     }
+
             }
         }
     }
