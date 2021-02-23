@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## [1.4.1](https://gitlab.fokus.fraunhofer.de/piveau/consus/piveau-consus-importing-rdf/tags/1.4.1) (2021-02-23)
+
+**Added:**
+* Accept in pipe segment config
+
 ## [1.4.0](https://gitlab.fokus.fraunhofer.de/piveau/consus/piveau-consus-importing-rdf/tags/1.4.0) (2021-01-26)
 
 **Changed:**
