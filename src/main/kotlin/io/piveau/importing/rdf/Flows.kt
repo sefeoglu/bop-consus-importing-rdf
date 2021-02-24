@@ -50,8 +50,8 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                 request.putHeader("Accept", accept)
             }
 
-            val response = circuitBreaker.execute<HttpResponse<Buffer>> {
-                    request.timeout(60000).send()
+            val response = circuitBreaker.execute<HttpResponse<Void>> {
+                    request.timeout(60000).send().onComplete(it)
                 }.await()
 
             nextLink = when (response.statusCode()) {
