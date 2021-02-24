@@ -3,16 +3,18 @@ package io.piveau.importing.rdf
 import io.piveau.pipe.PipeContext
 import io.piveau.rdf.*
 import io.piveau.utils.JenaUtils
+import io.vertx.circuitbreaker.CircuitBreaker
+import io.vertx.circuitbreaker.CircuitBreakerOptions
 import io.vertx.core.Vertx
+import io.vertx.core.buffer.Buffer
 import io.vertx.core.file.OpenOptions
 import io.vertx.core.json.JsonObject
+import io.vertx.ext.web.client.HttpResponse
 import io.vertx.ext.web.client.WebClient
 import io.vertx.ext.web.codec.BodyCodec
 import io.vertx.kotlin.coroutines.await
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
@@ -27,6 +29,10 @@ data class Dataset(val dataset: Model, val dataInfo: JsonObject)
 class DownloadSource(private val vertx: Vertx, private val client: WebClient, config: JsonObject) {
 
     private val preProcessing = config.getBoolean("PIVEAU_IMPORTING_PREPROCESSING", false)
+
+    private val circuitBreaker = CircuitBreaker
+        .create("", vertx, CircuitBreakerOptions().setMaxRetries(2).setTimeout(120000))
+        .retryPolicy { it * 2000L }
 
     fun pagesFlow(address: String, pipeContext: PipeContext): Flow<Page> = flow {
         var nextLink: String? = address
@@ -43,7 +49,10 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
             if (accept != null) {
                 request.putHeader("Accept", accept)
             }
-            val response = request.send().await()
+
+            val response = circuitBreaker.execute<HttpResponse<Buffer>> {
+                    request.timeout(60000).send()
+                }.await()
 
             nextLink = when (response.statusCode()) {
                 in 200..299 -> {
@@ -52,7 +61,12 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
 
                         val (fileName, content, finalContentType) = if (applyPreProcessing) {
                             val output = vertx.fileSystem().createTempFileBlocking("tmp", "piveau", ".tmp", null)
-                            val (outputStream, finalContentType) = preProcess(File(tmpFileName).inputStream(), File(output).outputStream(), contentType, address)
+                            val (outputStream, finalContentType) = preProcess(
+                                File(tmpFileName).inputStream(),
+                                File(output).outputStream(),
+                                contentType,
+                                address
+                            )
                             Triple(output, File(output).inputStream(), finalContentType)
                         } else {
                             Triple("", File(tmpFileName).inputStream(), contentType)
