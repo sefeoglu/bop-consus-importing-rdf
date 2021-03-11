@@ -33,7 +33,7 @@
         <dependencies>
             <dependency>
                 <groupId>io.vertx</groupId>
-                <artifactId>vertx-dependencies</artifactId>
+                <artifactId>vertx-stack-depchain</artifactId>
                 <version>${vertx.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -101,13 +101,13 @@
         <dependency>
             <groupId>io.piveau.utils</groupId>
             <artifactId>piveau-utils</artifactId>
-            <version>6.1.0</version>
+            <version>6.2.0</version>
         </dependency>
 
         <dependency>
             <groupId>io.piveau.pipe</groupId>
             <artifactId>pipe-connector</artifactId>
-            <version>5.2.0</version>
+            <version>5.2.1</version>
         </dependency>
 
         <dependency>
