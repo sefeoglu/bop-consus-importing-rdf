@@ -1,7 +1,7 @@
 # piveau importing rdf
 Microservice for importing from source and feeding a pipe.
 
-The service is based on the [pipe-connector](https://gitlab.fokus.fraunhofer.de/viaduct/pipe-connector) library. Any configuration applicable for the pipe-connector can also be used for this service.
+The service is based on the piveau-pipe-connector library. Any configuration applicable for the pipe-connector can also be used for this service.
 
 ## Table of Contents
 1. [Build](#build)
@@ -21,7 +21,7 @@ Requirements:
  * Java 11
 
 ```bash
-$ git clone https://gitlab.fokus.fraunhofer.de/viaduct/piveau-importing-rdf.git
+$ git clone <gitrepouri>
 $ cd piveau-importing-rdf
 $ mvn package
 ```
@@ -126,7 +126,7 @@ _optional_
     The hash value calculated at the source
 
 ### Environment
-See also [pipe-connector](https://gitlab.fokus.fraunhofer.de/viaduct/pipe-connector)
+See also piveau-pipe-connector
 
 | Variable| Description | Default Value |
 | :--- | :--- | :--- |
