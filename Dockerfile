@@ -7,13 +7,10 @@ ENV VERTICLE_HOME /usr/verticles
 
 EXPOSE 8080
 
-RUN groupadd vertx && useradd -g vertx vertx
+RUN mkdir -p $VERTICLE_HOME && groupadd vertx && useradd -g vertx vertx && chown -R vertx $VERTICLE_HOME && chmod -R g+w $VERTICLE_HOME
 
 # Copy your fat jar to the container
 COPY target/$VERTICLE_FILE $VERTICLE_HOME/
-
-RUN chown -R vertx $VERTICLE_HOME
-RUN chmod -R g+w $VERTICLE_HOME
 
 USER vertx
 

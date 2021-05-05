@@ -6,7 +6,6 @@ import io.piveau.utils.JenaUtils
 import io.vertx.circuitbreaker.CircuitBreaker
 import io.vertx.circuitbreaker.CircuitBreakerOptions
 import io.vertx.core.Vertx
-import io.vertx.core.buffer.Buffer
 import io.vertx.core.file.OpenOptions
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.HttpResponse
@@ -31,7 +30,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
     private val preProcessing = config.getBoolean("PIVEAU_IMPORTING_PREPROCESSING", false)
 
     private val circuitBreaker = CircuitBreaker
-        .create("", vertx, CircuitBreakerOptions().setMaxRetries(2).setTimeout(120000))
+        .create("importing", vertx, CircuitBreakerOptions().setMaxRetries(2).setTimeout(120000))
         .retryPolicy { it * 2000L }
 
     fun pagesFlow(address: String, pipeContext: PipeContext): Flow<Page> = flow {
@@ -42,7 +41,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
         val brokenHydra = pipeContext.config.getBoolean("brokenHydra", false)
 
         do {
-            val tmpFileName: String = vertx.fileSystem().createTempFileBlocking("tmp", "piveau", ".tmp", null)
+            val tmpFileName: String = vertx.fileSystem().createTempFile("tmp", "piveau", ".tmp").await()
             val stream = vertx.fileSystem().open(tmpFileName, OpenOptions().setWrite(true)).await()
 
             val request = client.getAbs(nextLink as String).`as`(BodyCodec.pipe(stream, true))
@@ -50,9 +49,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                 request.putHeader("Accept", accept)
             }
 
-            val response = circuitBreaker.execute<HttpResponse<Void>> {
-                    request.timeout(60000).send().onComplete(it)
-                }.await()
+            val response = circuitBreaker.execute<HttpResponse<Void>> { request.timeout(60000).send().onComplete(it) }.await()
 
             nextLink = when (response.statusCode()) {
                 in 200..299 -> {
@@ -60,7 +57,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                     if (contentType.isRDF) {
 
                         val (fileName, content, finalContentType) = if (applyPreProcessing) {
-                            val output = vertx.fileSystem().createTempFileBlocking("tmp", "piveau", ".tmp", null)
+                            val output = vertx.fileSystem().createTempFile("tmp", "piveau", ".tmp").await()
                             val (outputStream, finalContentType) = preProcess(
                                 File(tmpFileName).inputStream(),
                                 File(output).outputStream(),
@@ -75,7 +72,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                         val page = JenaUtils.read(content, finalContentType)
 
                         if (fileName.isNotBlank()) {
-                            vertx.fileSystem().delete(fileName).await()
+                            vertx.fileSystem().delete(fileName)
                         }
 
                         val hydraPaging = HydraPaging.findPaging(page, if (brokenHydra) address else null)
@@ -93,7 +90,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                 else -> throw Throwable("$nextLink: ${response.statusCode()} - ${response.statusMessage()}\n${response.bodyAsString()}")
             }
 
-            vertx.fileSystem().delete(tmpFileName).await()
+            vertx.fileSystem().delete(tmpFileName)
         } while (nextLink != null)
     }
 
