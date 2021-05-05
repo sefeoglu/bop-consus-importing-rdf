@@ -132,6 +132,7 @@ See also piveau-pipe-connector
 | :--- | :--- | :--- |
 | `PIVEAU_IMPORTING_SEND_LIST_DELAY` | The delay in millisecond for sending the identifier list after the last dataset | `8000` |
 | `PIVEAU_IMPORTING_PREPROCESSING` | Generally do some pre-processing, e.g. to fix URI encoding issues | `false` |
+| `PIVEAU_DEFAULT_PULSE` | Emitting datasets delay in milliseconds | `15` |
 
 ### Logging
 See [logback](https://logback.qos.ch/documentation.html) documentation for more details
