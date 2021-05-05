@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+**Added:**
+* Reintroduce a pulse value for slower emitting datasets
+
 ## 1.4.1 (2021-02-23)
 
 **Added:**

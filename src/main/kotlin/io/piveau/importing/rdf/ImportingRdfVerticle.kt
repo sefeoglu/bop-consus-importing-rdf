@@ -15,6 +15,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlin.properties.Delegates
 
 @FlowPreview
@@ -23,6 +24,8 @@ class ImportingRdfVerticle : CoroutineVerticle() {
 
     private lateinit var downloadSource: DownloadSource
     private var defaultDelay by Delegates.notNull<Long>()
+
+    private var pulse: Long = 0
 
     override suspend fun start() {
         vertx.eventBus().consumer(ADDRESS, this::handlePipe)
@@ -39,6 +42,7 @@ class ImportingRdfVerticle : CoroutineVerticle() {
         val config = ConfigRetriever.create(vertx, ConfigRetrieverOptions().addStore(envStoreOptions)).config.await()
         downloadSource = DownloadSource(vertx, WebClient.create(vertx), config)
         defaultDelay = config.getLong("PIVEAU_IMPORTING_SEND_LIST_DELAY", 8000L)
+        pulse = config.getLong("PIVEAU_DEFAULT_PULSE", 15)
     }
 
     private fun handlePipe(message: Message<PipeContext>) {
@@ -73,6 +77,9 @@ class ImportingRdfVerticle : CoroutineVerticle() {
                                 log.info("Importing finished")
                             }
                         }
+                    }
+                    .onEach { dataset ->
+                        delay(config.getLong("pulse", pulse))
                     }
                     .collect { (dataset, dataInfo) ->
                         identifiers.add(dataInfo.getString("identifier"))
