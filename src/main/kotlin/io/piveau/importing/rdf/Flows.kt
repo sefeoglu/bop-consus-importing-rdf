@@ -41,7 +41,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
         val brokenHydra = pipeContext.config.getBoolean("brokenHydra", false)
 
         do {
-            val tmpFileName: String = vertx.fileSystem().createTempFile("tmp", "piveau", ".tmp").await()
+            val tmpFileName: String = vertx.fileSystem().createTempFile("piveau", ".tmp").await()
             val stream = vertx.fileSystem().open(tmpFileName, OpenOptions().setWrite(true)).await()
 
             val request = client.getAbs(nextLink as String).`as`(BodyCodec.pipe(stream, true))
@@ -57,7 +57,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                     if (contentType.isRDF) {
 
                         val (fileName, content, finalContentType) = if (applyPreProcessing) {
-                            val output = vertx.fileSystem().createTempFile("tmp", "piveau", ".tmp").await()
+                            val output = vertx.fileSystem().createTempFile("piveau", ".tmp").await()
                             val (outputStream, finalContentType) = preProcess(
                                 File(tmpFileName).inputStream(),
                                 File(output).outputStream(),
