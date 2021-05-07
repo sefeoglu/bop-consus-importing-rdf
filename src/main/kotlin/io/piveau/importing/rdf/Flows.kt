@@ -30,7 +30,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
     private val preProcessing = config.getBoolean("PIVEAU_IMPORTING_PREPROCESSING", false)
 
     private val circuitBreaker = CircuitBreaker
-        .create("importing", vertx, CircuitBreakerOptions().setMaxRetries(2).setTimeout(120000))
+        .create("importing", vertx, CircuitBreakerOptions().setMaxRetries(2).setTimeout(180000))
         .retryPolicy { it * 2000L }
 
     fun pagesFlow(address: String, pipeContext: PipeContext): Flow<Page> = flow {
@@ -49,7 +49,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                 request.putHeader("Accept", accept)
             }
 
-            val response = circuitBreaker.execute<HttpResponse<Void>> { request.timeout(60000).send().onComplete(it) }.await()
+            val response = circuitBreaker.execute<HttpResponse<Void>> { request.timeout(120000).send().onComplete(it) }.await()
 
             nextLink = when (response.statusCode()) {
                 in 200..299 -> {
