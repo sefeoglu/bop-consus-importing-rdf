@@ -111,7 +111,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
 
                     emit(Dataset(dataset.extractAsModel() ?: ModelFactory.createDefaultModel(), dataInfo))
 
-                } ?: pipeContext.log.warn("Could not extract an identifier from {}", dataset.uri)
+                } ?: pipeContext.log.warn("Could not extract an identifier from a dataset")
             }
         }
     }

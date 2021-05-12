@@ -2,10 +2,15 @@
 
 ## Unreleased
 
+**Changed:**
+* Increased timeout for requests and circuit breaker
+
 **Added:**
 * Reintroduce a pulse value for slower emitting datasets
+
 **Fixed:**
 * Temp file creation mode
+* Log output of not identifiable dataset
 
 ## 1.4.1 (2021-02-23)
 
