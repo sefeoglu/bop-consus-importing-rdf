@@ -101,6 +101,9 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
         if (pipeContext.config.getBoolean("useTempFile", false)) {
             throw NotImplementedError("Using temp file is currently not supported")
         } else {
+            // cleanup some idiosyncrasies
+            page.page.removeAll(null, RDF.type, DCAT.dataset)
+
             val datasets = page.page.listResourcesWithProperty(RDF.type, DCAT.Dataset)
             while (datasets.hasNext()) {
                 val dataset = datasets.next()
@@ -109,7 +112,9 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                         .put("total", page.total)
                         .put("identifier", id)
 
-                    emit(Dataset(dataset.extractAsModel() ?: ModelFactory.createDefaultModel(), dataInfo))
+                    val datasetModel = dataset.extractAsModel() ?: ModelFactory.createDefaultModel()
+
+                    emit(Dataset(datasetModel , dataInfo))
 
                 } ?: pipeContext.log.warn("Could not extract an identifier from a dataset")
             }
