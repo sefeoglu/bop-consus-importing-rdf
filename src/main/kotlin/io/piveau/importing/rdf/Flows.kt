@@ -105,11 +105,12 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
             page.page.removeAll(null, RDF.type, DCAT.dataset)
 
             val datasets = page.page.listResourcesWithProperty(RDF.type, DCAT.Dataset)
+            val total = if (page.total > 0) page.total else datasets.toList().size
             while (datasets.hasNext()) {
                 val dataset = datasets.next()
                 JenaUtils.findIdentifier(dataset, removePrefix, precedenceUriRef)?.let { id ->
                     val dataInfo = JsonObject()
-                        .put("total", page.total)
+                        .put("total", total)
                         .put("identifier", id)
 
                     val datasetModel = dataset.extractAsModel() ?: ModelFactory.createDefaultModel()
