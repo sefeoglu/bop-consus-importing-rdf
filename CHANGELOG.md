@@ -11,6 +11,7 @@
 **Fixed:**
 * Temp file creation mode
 * Log output of not identifiable dataset
+* Total count for non hydra paged sources
 
 ## 1.4.1 (2021-02-23)
 
