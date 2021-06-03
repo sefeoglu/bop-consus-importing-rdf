@@ -14,10 +14,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
-        <kotlin.version>1.4.30</kotlin.version>
+        <kotlin.version>1.5.10</kotlin.version>
         <kotlin.code.style>official</kotlin.code.style>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <vertx.version>4.0.3</vertx.version>
+        <vertx.version>4.1.0</vertx.version>
         <vertx.verticle>io.piveau.importing.MainVerticle</vertx.verticle>
     </properties>
 
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-coroutines-core</artifactId>
-            <version>1.4.2</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
@@ -101,13 +101,13 @@
         <dependency>
             <groupId>io.piveau.utils</groupId>
             <artifactId>piveau-utils</artifactId>
-            <version>7.0.0-SNAPSHOT</version>
+            <version>7.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>io.piveau.pipe</groupId>
             <artifactId>pipe-connector</artifactId>
-            <version>5.3.0</version>
+            <version>5.3.1</version>
         </dependency>
 
         <dependency>
@@ -187,7 +187,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.6</version>
+                <version>0.8.7</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
