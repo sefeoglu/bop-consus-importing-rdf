@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.5.0 (2021-06-05)
+
 **Changed:**
 * Increased timeout for requests and circuit breaker
 
