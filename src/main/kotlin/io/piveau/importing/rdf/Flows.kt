@@ -12,7 +12,6 @@ import io.vertx.ext.web.client.HttpResponse
 import io.vertx.ext.web.client.WebClient
 import io.vertx.ext.web.codec.BodyCodec
 import io.vertx.kotlin.coroutines.await
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.apache.jena.rdf.model.Model
@@ -24,7 +23,6 @@ import java.io.File
 data class Page(val page: Model, val total: Int)
 data class Dataset(val dataset: Model, val dataInfo: JsonObject)
 
-@FlowPreview
 class DownloadSource(private val vertx: Vertx, private val client: WebClient, config: JsonObject) {
 
     private val preProcessing = config.getBoolean("PIVEAU_IMPORTING_PREPROCESSING", false)
