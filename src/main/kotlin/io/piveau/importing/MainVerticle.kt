@@ -6,12 +6,8 @@ import io.vertx.core.DeploymentOptions
 import io.vertx.core.Launcher
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import java.nio.file.FileAlreadyExistsException
 
-@FlowPreview
-@ExperimentalCoroutinesApi
 class MainVerticle : CoroutineVerticle() {
 
     override suspend fun start() {
@@ -29,8 +25,6 @@ class MainVerticle : CoroutineVerticle() {
 
 }
 
-@FlowPreview
-@ExperimentalCoroutinesApi
 fun main(args: Array<String>) {
     Launcher.executeCommand("run", *(args.plus(MainVerticle::class.java.name)))
 }
