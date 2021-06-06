@@ -18,8 +18,6 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlin.properties.Delegates
 
-@FlowPreview
-@ExperimentalCoroutinesApi
 class ImportingRdfVerticle : CoroutineVerticle() {
 
     private lateinit var downloadSource: DownloadSource
@@ -28,7 +26,11 @@ class ImportingRdfVerticle : CoroutineVerticle() {
     private var pulse: Long = 0
 
     override suspend fun start() {
-        vertx.eventBus().consumer(ADDRESS, this::handlePipe)
+        vertx.eventBus().consumer<PipeContext>(ADDRESS).handler {
+            launch(Dispatchers.IO) {
+                handlePipe(it)
+            }
+        }
 
         val envStoreOptions = ConfigStoreOptions()
             .setType("env")
@@ -45,54 +47,52 @@ class ImportingRdfVerticle : CoroutineVerticle() {
         pulse = config.getLong("PIVEAU_DEFAULT_PULSE", 15)
     }
 
-    private fun handlePipe(message: Message<PipeContext>) {
-        GlobalScope.launch(Dispatchers.IO) {
-            with(message.body()) {
-                log.info("Import started.")
+    private suspend fun handlePipe(message: Message<PipeContext>) {
+        with(message.body()) {
+            log.info("Import started.")
 
-                val outputFormat = config.getString("outputFormat", "application/n-triples")
-                val delay = config.getLong("sendListDelay", defaultDelay)
-                val catalogue = config.getString("catalogue")
+            val outputFormat = config.getString("outputFormat", "application/n-triples")
+            val delay = config.getLong("sendListDelay", defaultDelay)
+            val catalogue = config.getString("catalogue")
 
-                val address = config.getString("address")
-                val identifiers = mutableListOf<String>()
+            val address = config.getString("address")
+            val identifiers = mutableListOf<String>()
 
-                downloadSource.pagesFlow(address, this)
-                    .flatMapConcat {
-                        downloadSource.datasetsFlow(it, this)
-                    }
-                    .onCompletion {
-                        when {
-                            it != null -> setFailure(it)
-                            else -> {
-                                delay(delay)
-                                val dataInfo = JsonObject()
-                                    .put("content", "identifierList")
-                                    .put("catalogue", catalogue)
-                                setResult(
-                                    JsonArray(identifiers).encodePrettily(),
-                                    "application/json",
-                                    dataInfo
-                                ).forward()
-                                log.info("Importing finished")
-                            }
+            downloadSource.pagesFlow(address, this)
+                .flatMapConcat {
+                    downloadSource.datasetsFlow(it, this)
+                }
+                .onCompletion {
+                    when {
+                        it != null -> setFailure(it)
+                        else -> {
+                            delay(delay)
+                            val dataInfo = JsonObject()
+                                .put("content", "identifierList")
+                                .put("catalogue", catalogue)
+                            setResult(
+                                JsonArray(identifiers).encodePrettily(),
+                                "application/json",
+                                dataInfo
+                            ).forward()
+                            log.info("Importing finished")
                         }
                     }
-                    .onEach { dataset ->
-                        delay(config.getLong("pulse", pulse))
+                }
+                .onEach { dataset ->
+                    delay(config.getLong("pulse", pulse))
+                }
+                .collect { (dataset, dataInfo) ->
+                    identifiers.add(dataInfo.getString("identifier"))
+                    dataInfo.put("counter", identifiers.size).put("catalogue", config.getString("catalogue"))
+                    dataset.asString(outputFormat).let {
+                        setResult(it, outputFormat, dataInfo).forward()
+                        log.info("Data imported: {}", dataInfo)
+                        log.debug("Data content: {}", it)
                     }
-                    .collect { (dataset, dataInfo) ->
-                        identifiers.add(dataInfo.getString("identifier"))
-                        dataInfo.put("counter", identifiers.size).put("catalogue", config.getString("catalogue"))
-                        dataset.asString(outputFormat).let {
-                            setResult(it, outputFormat, dataInfo).forward()
-                            log.info("Data imported: {}", dataInfo)
-                            log.debug("Data content: {}", it)
-                        }
-                        dataset.close()
-                    }
+                    dataset.close()
+                }
 
-            }
         }
     }
 
