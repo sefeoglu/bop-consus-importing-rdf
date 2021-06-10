@@ -18,7 +18,7 @@ class MainVerticle : CoroutineVerticle() {
             throw FileAlreadyExistsException("tmp")
         }
 
-        vertx.deployVerticle(ImportingRdfVerticle::class.qualifiedName ?: "", DeploymentOptions().setWorker(true)).await()
+        vertx.deployVerticle(ImportingRdfVerticle::class.java, DeploymentOptions().setWorker(true)).await()
 
         PipeConnector.create(vertx, DeploymentOptions()).await().publishTo(ImportingRdfVerticle.ADDRESS)
     }

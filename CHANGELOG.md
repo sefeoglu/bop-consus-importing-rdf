@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+**Removed:**
+* GlobalScope coroutines
+
 ## 1.5.0 (2021-06-05)
 
 **Changed:**
