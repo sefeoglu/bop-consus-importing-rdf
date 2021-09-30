@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
+import org.apache.jena.riot.Lang
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF
 import java.io.File
@@ -105,16 +106,19 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
             val datasets = page.page.listResourcesWithProperty(RDF.type, DCAT.Dataset).toList()
             val total = if (page.total > 0) page.total else datasets.size
             datasets.forEach { dataset ->
-                JenaUtils.findIdentifier(dataset, removePrefix, precedenceUriRef)?.let { id ->
-                    val dataInfo = JsonObject()
-                        .put("total", total)
-                        .put("identifier", id)
+                dataset.identify(removePrefix, precedenceUriRef)?.let { id ->
+                    if (id.isNotBlank()) {
+                        val dataInfo = JsonObject()
+                            .put("total", total)
+                            .put("identifier", id)
 
-                    val datasetModel = dataset.extractAsModel() ?: ModelFactory.createDefaultModel()
+                        val datasetModel = dataset.extractAsModel() ?: ModelFactory.createDefaultModel()
 
-                    emit(Dataset(datasetModel , dataInfo))
-
-                } ?: pipeContext.log.warn("Could not extract an identifier from a dataset")
+                        emit(Dataset(datasetModel , dataInfo))
+                    } else {
+                        pipeContext.log.warn("Could not extract an identifier from dataset:\n{}", dataset.model.asString(Lang.TURTLE))
+                    }
+                } ?: pipeContext.log.warn("Could not extract an identifier from dataset:\n{}", dataset.model.asString(Lang.TURTLE))
             }
         }
     }
