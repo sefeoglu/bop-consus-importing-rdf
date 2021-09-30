@@ -116,9 +116,9 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
 
                         emit(Dataset(datasetModel , dataInfo))
                     } else {
-                        pipeContext.log.warn("Could not extract an identifier from dataset:\n{}", dataset.model.asString(Lang.TURTLE))
+                        pipeContext.log.warn("Could not extract an identifier from dataset:\n{}", dataset.extractAsModel()?.asString(Lang.TURTLE) ?: "")
                     }
-                } ?: pipeContext.log.warn("Could not extract an identifier from dataset:\n{}", dataset.model.asString(Lang.TURTLE))
+                } ?: pipeContext.log.warn("Could not extract an identifier from dataset:\n{}", dataset.extractAsModel()?.asString(Lang.TURTLE) ?: "")
             }
         }
     }
