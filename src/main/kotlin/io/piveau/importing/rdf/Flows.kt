@@ -103,7 +103,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
             // cleanup some idiosyncrasies
             page.page.removeAll(null, RDF.type, DCAT.dataset)
 
-            val datasets = page.page.listResourcesWithProperty(RDF.type, DCAT.Dataset).toList()
+            val datasets = page.page.listResourcesWithProperty(RDF.type, DCAT.Dataset).toSet()
             val total = if (page.total > 0) page.total else datasets.size
             datasets.forEach { dataset ->
                 dataset.identify(removePrefix, precedenceUriRef)?.let { id ->
@@ -116,9 +116,15 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
 
                         emit(Dataset(datasetModel , dataInfo))
                     } else {
-                        pipeContext.log.warn("Could not extract an identifier from dataset:\n{}", dataset.extractAsModel()?.asString(Lang.TURTLE) ?: "")
+                        pipeContext.log.warn("Could not extract an identifier from dataset")
+                        if (pipeContext.log.isDebugEnabled) {
+                            pipeContext.log.warn(
+                                "Could not extract an identifier from dataset:\n{}",
+                                dataset.extractAsModel()?.asString(Lang.TURTLE) ?: ""
+                            )
+                        }
                     }
-                } ?: pipeContext.log.warn("Could not extract an identifier from dataset:\n{}", dataset.extractAsModel()?.asString(Lang.TURTLE) ?: "")
+                } ?: pipeContext.log.warn("Could not extract an identifier from dataset")
             }
         }
     }
