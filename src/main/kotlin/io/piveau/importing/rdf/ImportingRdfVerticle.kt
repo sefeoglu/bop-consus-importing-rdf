@@ -83,6 +83,9 @@ class ImportingRdfVerticle : CoroutineVerticle() {
                     delay(config.getLong("pulse", pulse))
                 }
                 .collect { (dataset, dataInfo) ->
+                    if (identifiers.contains(dataInfo.getString("identifier"))) {
+                        log.warn("Duplicate dataset: {}", dataInfo.getString("identifier"))
+                    }
                     identifiers.add(dataInfo.getString("identifier"))
                     dataInfo.put("counter", identifiers.size).put("catalogue", config.getString("catalogue"))
                     dataset.asString(outputFormat).let {
