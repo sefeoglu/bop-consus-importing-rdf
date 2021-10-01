@@ -2,11 +2,16 @@
 
 ## Unreleased
 
+## 1.5.1 (2021-10-01)
+
 **Removed:**
 * GlobalScope coroutines
 
 **Changed:**
 * Handle empty ids correctly
+
+**Added:**
+* Warning when duplicates detected
 
 ## 1.5.0 (2021-06-05)
 
