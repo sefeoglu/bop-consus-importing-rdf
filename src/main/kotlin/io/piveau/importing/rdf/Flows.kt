@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
+import org.apache.jena.rdf.model.Selector
 import org.apache.jena.riot.Lang
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF
@@ -113,6 +114,13 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                             .put("identifier", id)
 
                         val datasetModel = dataset.extractAsModel() ?: ModelFactory.createDefaultModel()
+
+                        // More idiosyncrasies
+                        datasetModel.listStatements(null, RDF.type, DCAT.Catalog).toList().forEach { stmt ->
+                            stmt.subject.extractAsModel()?.let { model ->
+                                datasetModel.remove(model)
+                            }
+                        }
 
                         emit(Dataset(datasetModel , dataInfo))
                     } else {
