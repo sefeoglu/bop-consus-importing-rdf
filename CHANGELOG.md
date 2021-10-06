@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.6.0 (2021-10-06)
+
 **Added:**
 * Filter for referencing the catalogue from dataset
 
