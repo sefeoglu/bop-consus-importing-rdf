@@ -11,11 +11,13 @@ import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlin.coroutines.CoroutineContext
 import kotlin.properties.Delegates
 
 class ImportingRdfVerticle : CoroutineVerticle() {
@@ -27,7 +29,7 @@ class ImportingRdfVerticle : CoroutineVerticle() {
 
     override suspend fun start() {
         vertx.eventBus().consumer<PipeContext>(ADDRESS) {
-            launch(Dispatchers.IO) {
+            launch(vertx.dispatcher() as CoroutineContext) {
                 handlePipe(it)
             }
         }
@@ -79,7 +81,7 @@ class ImportingRdfVerticle : CoroutineVerticle() {
                         }
                     }
                 }
-                .onEach { dataset ->
+                .onEach {
                     delay(config.getLong("pulse", pulse))
                 }
                 .collect { (dataset, dataInfo) ->

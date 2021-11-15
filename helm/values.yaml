@@ -1,0 +1,14 @@
+fullnameOverride: ""
+nameOverride: ""
+
+image: {}
+imageTag: {}
+imagePullPolicy: {}
+imagePullSecrets: []
+
+resources: {}
+
+extraEnvs: []
+envFrom: []
+
+javaOpts: ""
