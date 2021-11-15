@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
-import org.apache.jena.rdf.model.Selector
 import org.apache.jena.riot.Lang
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF
@@ -42,55 +41,64 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
 
         do {
             val tmpFileName: String = vertx.fileSystem().createTempFile("piveau", ".tmp").await()
-            val stream = vertx.fileSystem().open(tmpFileName, OpenOptions().setWrite(true)).await()
+            try {
+                val stream = vertx.fileSystem().open(tmpFileName, OpenOptions().setWrite(true)).await()
 
-            val request = client.getAbs(nextLink as String).`as`(BodyCodec.pipe(stream, true))
-            if (accept != null) {
-                request.putHeader("Accept", accept)
-            }
+                val request = client.getAbs(nextLink as String).`as`(BodyCodec.pipe(stream, true))
+                if (accept != null) {
+                    request.putHeader("Accept", accept)
+                }
 
-            val response = circuitBreaker.execute<HttpResponse<Void>> { request.timeout(120000).send().onComplete(it) }.await()
+                val response = circuitBreaker.execute<HttpResponse<Void>> { request.timeout(120000).send().onComplete(it) }.await()
 
-            nextLink = when (response.statusCode()) {
-                in 200..299 -> {
-                    val contentType = inputFormat ?: response.getHeader("Content-Type") ?: "application/rdf+xml"
-                    if (contentType.isRDF) {
+                nextLink = when (response.statusCode()) {
+                    in 200..299 -> {
+                        val contentType = inputFormat ?: response.getHeader("Content-Type") ?: "application/rdf+xml"
+                        if (contentType.isRDF) {
 
-                        val (fileName, content, finalContentType) = if (applyPreProcessing) {
-                            val output = vertx.fileSystem().createTempFile("piveau", ".tmp").await()
-                            val (outputStream, finalContentType) = preProcess(
-                                File(tmpFileName).inputStream(),
-                                File(output).outputStream(),
-                                contentType,
-                                address
-                            )
-                            Triple(output, File(output).inputStream(), finalContentType)
+                            val (fileName, content, finalContentType) = if (applyPreProcessing) {
+                                val output = vertx.fileSystem().createTempFile("piveau", ".tmp").await()
+                                val (outputStream, finalContentType) = preProcess(
+                                    File(tmpFileName).inputStream(),
+                                    File(output).outputStream(),
+                                    contentType,
+                                    address
+                                )
+                                Triple(output, File(output).inputStream(), finalContentType)
+                            } else {
+                                Triple("", File(tmpFileName).inputStream(), contentType)
+                            }
+
+                            val page = try {
+                                JenaUtils.read(content, finalContentType, address)
+                            } catch (e: Exception) {
+                                throw Throwable("$nextLink: ${e.message}")
+                            }
+
+                            if (fileName.isNotBlank()) {
+                                vertx.fileSystem().delete(fileName)
+                            }
+
+                            val hydraPaging = HydraPaging.findPaging(page, if (brokenHydra) address else null)
+
+                            val next = hydraPaging.next
+
+                            emit(Page(page, hydraPaging.total))
+
+                            next
+
                         } else {
-                            Triple("", File(tmpFileName).inputStream(), contentType)
+                            throw Throwable("$nextLink: Content-Type $contentType is not an RDF content type. Content:\n${response.bodyAsString()}")
                         }
-
-                        val page = JenaUtils.read(content, finalContentType)
-
-                        if (fileName.isNotBlank()) {
-                            vertx.fileSystem().delete(fileName)
-                        }
-
-                        val hydraPaging = HydraPaging.findPaging(page, if (brokenHydra) address else null)
-
-                        val next = hydraPaging.next
-
-                        emit(Page(page, hydraPaging.total))
-
-                        next
-
-                    } else {
-                        throw Throwable("$nextLink: Content-Type $contentType is not an RDF content type. Content:\n${response.bodyAsString()}")
+                    }
+                    else -> {
+                        throw Throwable("$nextLink: ${response.statusCode()} - ${response.statusMessage()}\n${response.bodyAsString()}")
                     }
                 }
-                else -> throw Throwable("$nextLink: ${response.statusCode()} - ${response.statusMessage()}\n${response.bodyAsString()}")
+            } finally {
+                vertx.fileSystem().delete(tmpFileName)
             }
 
-            vertx.fileSystem().delete(tmpFileName)
         } while (nextLink != null)
     }
 

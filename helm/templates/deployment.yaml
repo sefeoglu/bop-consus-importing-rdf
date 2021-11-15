@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ template "piveau-consus-importing-rdf.fullname" . }}
+  name: {{ template "piveau-consus-importing-rdf.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "piveau-consus-importing-rdf.fullname" . }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ template "piveau-consus-importing-rdf.fullname" . }}
+    spec:
+      imagePullSecrets: {{ toYaml .Values.imagePullSecrets | nindent 8 }}
+      containers:
+        - name: {{ template "piveau-consus-importing-rdf.fullname" . }}
+          image: {{ printf "%s:%s" .Values.image .Values.imageTag }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          ports:
+            - containerPort: 8080
+              name: default
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          env: {{ toYaml .Values.extraEnvs | nindent 12 }}
+            - name: JAVA_OPTS
+              value: {{ .Values.javaOpts }} -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:+UseStringDeduplication -XX:+ExitOnOutOfMemoryError
+            - name: PIVEAU_PIPE_MAIL_CONFIG
+              value: |-
+                {
+                  "system": "{{ .Values.mailServer.id | default .Release.Name }}",
+                  "mailto": "info@piveau.io"
+                }
+          envFrom: {{ toYaml .Values.envFrom | nindent 12 }}

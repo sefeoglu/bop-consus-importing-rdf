@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+**Fixed:**
+* Ensure deletion of temp file
+
 ## 1.6.0 (2021-10-06)
 
 **Added:**
