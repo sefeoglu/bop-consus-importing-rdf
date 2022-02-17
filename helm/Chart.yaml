@@ -3,7 +3,7 @@ name: piveau-consus-importing-rdf
 description: Helm chart for the piveau consus importing rdf module
 
 version: 1.0.0
-appVersion: "1.6.0"
+appVersion: "${project.version}"
 maintainers:
   - name: Simon Dutkowski
     email: simon.dutkowski@fokus.fraunhofer.de
