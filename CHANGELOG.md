@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.6.2 (2022-06-27)
+
+**Changed:**
+* Lib updates
+
 ## 1.6.1 (2021-11-16)
 
 **Fixed:**
