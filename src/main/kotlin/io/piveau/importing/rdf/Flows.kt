@@ -7,6 +7,7 @@ import io.vertx.circuitbreaker.CircuitBreaker
 import io.vertx.circuitbreaker.CircuitBreakerOptions
 import io.vertx.core.Vertx
 import io.vertx.core.file.OpenOptions
+import io.vertx.core.http.HttpHeaders
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.HttpResponse
 import io.vertx.ext.web.client.WebClient
@@ -53,7 +54,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
 
                 nextLink = when (response.statusCode()) {
                     in 200..299 -> {
-                        val contentType = inputFormat ?: response.getHeader("Content-Type") ?: "application/rdf+xml"
+                        val contentType = inputFormat ?: response.getHeader(HttpHeaders.CONTENT_TYPE.toString()) ?: "application/rdf+xml"
                         if (contentType.isRDF) {
 
                             val (fileName, content, finalContentType) = if (applyPreProcessing) {

@@ -6,7 +6,7 @@
 
     <groupId>io.piveau.consus</groupId>
     <artifactId>importing-rdf</artifactId>
-    <version>1.6.1</version>
+    <version>1.6.2</version>
 
     <name>piveau-consus-importing-rdf</name>
 
@@ -14,10 +14,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
-        <kotlin.version>1.5.31</kotlin.version>
+        <kotlin.version>1.7.0</kotlin.version>
         <kotlin.code.style>official</kotlin.code.style>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <vertx.version>4.2.1</vertx.version>
+        <vertx.version>4.3.1</vertx.version>
         <vertx.verticle>io.piveau.importing.MainVerticle</vertx.verticle>
     </properties>
 
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-coroutines-core</artifactId>
-            <version>1.5.2</version>
+            <version>1.6.3</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
@@ -84,10 +84,10 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-health-check</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-dropwizard-metrics</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>io.vertx</groupId>-->
+<!--            <artifactId>vertx-dropwizard-metrics</artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-config</artifactId>
@@ -101,29 +101,29 @@
         <dependency>
             <groupId>io.piveau.utils</groupId>
             <artifactId>piveau-utils</artifactId>
-            <version>8.0.0-SNAPSHOT</version>
+            <version>8.10.0</version>
         </dependency>
 
         <dependency>
             <groupId>io.piveau.pipe</groupId>
             <artifactId>pipe-connector</artifactId>
-            <version>5.4.0</version>
+            <version>6.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.codehaus.janino</groupId>
             <artifactId>janino</artifactId>
-            <version>3.1.6</version>
+            <version>3.1.7</version>
         </dependency>
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
-            <version>6.6</version>
+            <version>7.2</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.6</version>
+            <version>1.2.11</version>
         </dependency>
 
     </dependencies>
@@ -133,6 +133,10 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>helm</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
@@ -160,13 +164,13 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <jvmTarget>11</jvmTarget>
+                    <jvmTarget>17</jvmTarget>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>io.reactiverse</groupId>
                 <artifactId>vertx-maven-plugin</artifactId>
-                <version>1.0.25</version>
+                <version>1.0.27</version>
                 <executions>
                     <execution>
                         <id>vmp</id>
@@ -182,12 +186,12 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
+                <version>3.0.0-M6</version>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.7</version>
+                <version>0.8.8</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
