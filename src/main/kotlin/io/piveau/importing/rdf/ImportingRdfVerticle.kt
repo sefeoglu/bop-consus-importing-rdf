@@ -1,6 +1,7 @@
 package io.piveau.importing.rdf
 
 import io.piveau.pipe.PipeContext
+import io.piveau.rdf.RDFMimeTypes
 import io.piveau.rdf.asString
 import io.vertx.config.ConfigRetriever
 import io.vertx.config.ConfigRetrieverOptions
@@ -27,7 +28,7 @@ class ImportingRdfVerticle : CoroutineVerticle() {
     private var pulse: Long = 0
 
     override suspend fun start() {
-        vertx.eventBus().consumer<PipeContext>(ADDRESS) {
+        vertx.eventBus().consumer(ADDRESS) {
             launch(vertx.dispatcher() as CoroutineContext) {
                 handlePipe(it)
             }
@@ -52,7 +53,7 @@ class ImportingRdfVerticle : CoroutineVerticle() {
         with(message.body()) {
             log.info("Import started.")
 
-            val outputFormat = config.getString("outputFormat", "application/n-triples")
+            val outputFormat = config.getString("outputFormat", RDFMimeTypes.NTRIPLES)
             val delay = config.getLong("sendListDelay", defaultDelay)
             val catalogue = config.getString("catalogue")
 
