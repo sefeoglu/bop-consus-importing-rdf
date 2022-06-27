@@ -6,7 +6,7 @@
 
     <groupId>io.piveau.consus</groupId>
     <artifactId>importing-rdf</artifactId>
-    <version>1.6.3-SNAPSHOT</version>
+    <version>1.6.2</version>
 
     <name>piveau-consus-importing-rdf</name>
 
