@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.6.3 (2022-06-28)
+
+**Fixed:**
+* Connector and body handler
+
 ## 1.6.2 (2022-06-27)
 
 **Changed:**

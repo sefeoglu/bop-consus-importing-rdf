@@ -107,7 +107,7 @@
         <dependency>
             <groupId>io.piveau.pipe</groupId>
             <artifactId>pipe-connector</artifactId>
-            <version>6.0.1</version>
+            <version>6.1.0</version>
         </dependency>
 
         <dependency>
