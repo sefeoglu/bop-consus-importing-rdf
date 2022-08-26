@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+**Added:**
+* Support for gzip compressed files (issue #2177)
+
 ## 1.6.3 (2022-06-28)
 
 **Fixed:**
