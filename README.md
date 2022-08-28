@@ -18,7 +18,7 @@ The service is based on the piveau-pipe-connector library. Any configuration app
 Requirements:
  * Git
  * Maven 3
- * Java 11
+ * Java 17
 
 ```bash
 $ git clone <gitrepouri>
@@ -29,7 +29,7 @@ $ mvn package
 ## Run
 
 ```bash
-$ java -jar target/piveau-importing-rdf-fat.jar
+$ java -jar target/importing-rdf.jar
 ```
 
 ## Docker
@@ -87,10 +87,6 @@ _optional_
      * `text/turtle`
      * `text/n3`
 
-* `sendHash`
-    
-    Attach a hash value to the `dataInfo` object. Default is `false`.
-    
 * `brokenHydra`
     
     Some sources use a wrong urls in hydra information for paging. If set to true the service will try to handle such broken hydra information. Default is `false`
@@ -120,10 +116,6 @@ _optional_
 * `catalogue`
 
     The id of the target catalogue
-
-* `hash` (optional) 
-
-    The hash value calculated at the source
 
 ### Environment
 See also piveau-pipe-connector

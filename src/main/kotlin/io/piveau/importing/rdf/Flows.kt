@@ -3,6 +3,7 @@ package io.piveau.importing.rdf
 import io.piveau.pipe.PipeContext
 import io.piveau.rdf.*
 import io.piveau.utils.JenaUtils
+import io.piveau.utils.gunzip
 import io.vertx.circuitbreaker.CircuitBreaker
 import io.vertx.circuitbreaker.CircuitBreakerOptions
 import io.vertx.core.Vertx
@@ -52,6 +53,12 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
 
                 val response = circuitBreaker.execute<HttpResponse<Void>> { request.timeout(120000).send().onComplete(it) }.await()
 
+                val finalFileName = if (address.endsWith(".gz") || response.headers().get("Content-Type").contains("application/gzip")) {
+                    val targetFileName: String = vertx.fileSystem().createTempFile("piveau", ".tmp").await()
+                    gunzip(tmpFileName, targetFileName)
+                    targetFileName
+                } else tmpFileName
+
                 nextLink = when (response.statusCode()) {
                     in 200..299 -> {
                         val contentType = inputFormat ?: response.getHeader(HttpHeaders.CONTENT_TYPE.toString()) ?: "application/rdf+xml"
@@ -59,8 +66,8 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
 
                             val (fileName, content, finalContentType) = if (applyPreProcessing) {
                                 val output = vertx.fileSystem().createTempFile("piveau", ".tmp").await()
-                                val (outputStream, finalContentType) = preProcess(
-                                    File(tmpFileName).inputStream(),
+                                val (_, finalContentType) = preProcess(
+                                    File(finalFileName).inputStream(),
                                     File(output).outputStream(),
                                     contentType,
                                     address
@@ -96,6 +103,9 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                         throw Throwable("$nextLink: ${response.statusCode()} - ${response.statusMessage()}\n${response.bodyAsString()}")
                     }
                 }
+                if (finalFileName != tmpFileName) {
+                    vertx.fileSystem().delete(finalFileName)
+                }
             } finally {
                 vertx.fileSystem().delete(tmpFileName)
             }
@@ -130,8 +140,9 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                                 datasetModel.remove(model)
                             }
                         }
-
-                        emit(Dataset(datasetModel , dataInfo))
+                        if (!datasetModel.isEmpty) {
+                            emit(Dataset(datasetModel, dataInfo))
+                        }
                     } else {
                         pipeContext.log.warn("Could not extract an identifier from dataset")
                         if (pipeContext.log.isDebugEnabled) {
