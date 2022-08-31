@@ -74,7 +74,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                                 )
                                 Triple(output, File(output).inputStream(), finalContentType)
                             } else {
-                                Triple("", File(tmpFileName).inputStream(), contentType)
+                                Triple("", File(finalFileName).inputStream(), contentType)
                             }
 
                             val page = try {
