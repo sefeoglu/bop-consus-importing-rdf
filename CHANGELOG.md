@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.7.0 (2022-08-31)
+
 **Added:**
 * Support for gzip compressed files (issue #2177)
 
