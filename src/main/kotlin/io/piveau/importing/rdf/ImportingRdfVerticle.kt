@@ -1,7 +1,6 @@
 package io.piveau.importing.rdf
 
 import io.piveau.pipe.PipeContext
-import io.piveau.pipe.connector.Run
 import io.piveau.rdf.RDFMimeTypes
 import io.piveau.rdf.asString
 import io.vertx.config.ConfigRetriever
@@ -15,10 +14,7 @@ import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.properties.Delegates
 
@@ -63,6 +59,10 @@ class ImportingRdfVerticle : CoroutineVerticle() {
             val identifiers = mutableListOf<String>()
 
             downloadSource.pagesFlow(address, this)
+                .catch {
+                    log.error("${it.message}")
+                    setFailure(it)
+                }
                 .cancellable()
                 .flatMapConcat {
                     downloadSource.datasetsFlow(it, this)
@@ -99,8 +99,8 @@ class ImportingRdfVerticle : CoroutineVerticle() {
                         log.debug("Data content: {}", it)
                     }
                     dataset.close()
+                    setRunFinished()
                 }
-            setRunFinished()
         }
     }
 
