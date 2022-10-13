@@ -46,6 +46,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
             try {
                 val stream = vertx.fileSystem().open(tmpFileName, OpenOptions().setWrite(true)).await()
 
+                log.trace("Next address: {}", nextLink)
                 val request = client.getAbs(nextLink as String).`as`(BodyCodec.pipe(stream, true))
                 if (accept != null) {
                     request.putHeader("Accept", accept)
