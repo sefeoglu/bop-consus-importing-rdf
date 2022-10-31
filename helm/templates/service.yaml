@@ -1,14 +1,15 @@
+{{- $fullName := include "piveau-consus-importing-rdf.fullname" . -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "piveau-consus-importing-rdf.fullname" . }}
+  name: {{ $fullName }}
   labels:
-    app: {{ template "piveau-consus-importing-rdf.fullname" . }}
+    app: {{ $fullName }}
 spec:
   ports:
     - name: http
-      port: 8080
+      port: {{ .Values.service.port }}
       targetPort: default
       protocol: TCP
   selector:
-    app: {{ template "piveau-consus-importing-rdf.fullname" . }}
+    app: {{ $fullName }}

@@ -1,14 +1,18 @@
-fullnameOverride: ""
 nameOverride: ""
 
-image: {}
-imageTag: {}
-imagePullPolicy: {}
+image: registry.gitlab.com/piveau/consus/piveau-consus-importing-rdf
+imageTag: "1.7.0"
+imagePullPolicy: IfNotPresent
 imagePullSecrets: []
 
-resources: {}
+resources:
+  requests:
+    cpu: 1000m
+    memory: 2Gi
 
 extraEnvs: []
-envFrom: []
 
-javaOpts: ""
+javaOpts: "-XX:MaxRAMPercentage=75.0"
+
+service:
+  port: 8080
