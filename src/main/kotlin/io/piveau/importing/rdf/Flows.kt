@@ -43,9 +43,12 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
 
         do {
             val tmpFileName: String = vertx.fileSystem().createTempFile("piveau", ".tmp").await()
+            log.trace("Temp file name: {}", tmpFileName)
             try {
                 val stream = vertx.fileSystem().open(tmpFileName, OpenOptions().setWrite(true)).await()
+                log.trace("Temp file opened")
 
+                log.trace("Next address: {}", nextLink)
                 val request = client.getAbs(nextLink as String).`as`(BodyCodec.pipe(stream, true))
                 if (accept != null) {
                     request.putHeader("Accept", accept)
@@ -107,6 +110,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                     vertx.fileSystem().delete(finalFileName)
                 }
             } finally {
+                log.debug("Deleting temp file {}", tmpFileName)
                 vertx.fileSystem().delete(tmpFileName)
             }
 
