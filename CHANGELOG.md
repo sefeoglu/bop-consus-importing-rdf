@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.7.1 (2022-12-15)
+
+**Removed:**
+* Circuit breaker for download requests
+
 ## 1.7.0 (2022-08-31)
 
 **Added:**

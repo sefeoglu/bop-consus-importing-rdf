@@ -1,6 +1,6 @@
 apiVersion: v2
 name: piveau-consus-importing-rdf
-description: Helm chart for the piveau consus importing rdf module
+description: Helm chart for the piveau consus importing rdf component
 
 version: 1.0.0
 appVersion: "1.7.0"
