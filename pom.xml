@@ -6,7 +6,7 @@
 
     <groupId>io.piveau.consus</groupId>
     <artifactId>importing-rdf</artifactId>
-    <version>1.7.1-SNAPSHOT</version>
+    <version>1.7.2-SNAPSHOT</version>
 
     <name>piveau-consus-importing-rdf</name>
 
@@ -18,7 +18,7 @@
         <kotlin.version>1.7.20</kotlin.version>
         <kotlin.code.style>official</kotlin.code.style>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <vertx.version>4.3.4</vertx.version>
+        <vertx.version>4.3.6</vertx.version>
         <vertx.verticle>io.piveau.importing.MainVerticle</vertx.verticle>
     </properties>
 
@@ -102,19 +102,19 @@
         <dependency>
             <groupId>io.piveau.utils</groupId>
             <artifactId>piveau-utils</artifactId>
-            <version>10.1.0</version>
+            <version>10.2.1</version>
         </dependency>
 
         <dependency>
             <groupId>io.piveau.pipe</groupId>
             <artifactId>pipe-connector</artifactId>
-            <version>7.0.1</version>
+            <version>7.0.2</version>
         </dependency>
 
         <dependency>
             <groupId>org.codehaus.janino</groupId>
             <artifactId>janino</artifactId>
-            <version>3.1.8</version>
+            <version>3.1.9</version>
         </dependency>
         <dependency>
             <groupId>net.logstash.logback</groupId>
@@ -124,12 +124,12 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.3</version>
+            <version>2.0.5</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.4</version>
+            <version>1.4.5</version>
         </dependency>
 
     </dependencies>

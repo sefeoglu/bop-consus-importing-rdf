@@ -32,7 +32,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
 
     private val circuitBreaker = CircuitBreaker
         .create("importing", vertx, CircuitBreakerOptions().setMaxRetries(2).setTimeout(180000))
-        .retryPolicy { it * 2000L }
+        .retryPolicy { _, c -> c * 2000L }
 
     fun pagesFlow(address: String, pipeContext: PipeContext): Flow<Page> = flow {
         var nextLink: String? = address
@@ -54,7 +54,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                     request.putHeader("Accept", accept)
                 }
 
-                val response = circuitBreaker.execute<HttpResponse<Void>> { request.timeout(120000).send().onComplete(it) }.await()
+                val response = request.timeout(120000).send().await()
 
                 val finalFileName = if (address.endsWith(".gz") || response.headers().get("Content-Type").contains("application/gzip")) {
                     val targetFileName: String = vertx.fileSystem().createTempFile("piveau", ".tmp").await()
