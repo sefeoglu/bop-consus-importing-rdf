@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.7.2 (2022-12-15)
+
+**Changed:**
+* Load buildInfo once for faster health check
+
 ## 1.7.1 (2022-12-15)
 
 **Removed:**
