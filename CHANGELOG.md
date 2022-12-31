@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+**Fixed:**
+* Wrong exception catching in page flow 
+* Logger for `DownloadSource` 
+
 ## 1.7.2 (2022-12-24)
 
 **Changed:**
