@@ -59,13 +59,12 @@ class ImportingRdfVerticle : CoroutineVerticle() {
             val identifiers = mutableListOf<String>()
 
             downloadSource.pagesFlow(address, this)
-                .catch {
-                    log.error("${it.message}")
-                    setFailure(it)
-                }
                 .cancellable()
                 .flatMapConcat {
                     downloadSource.datasetsFlow(it, this)
+                }
+                .onEach {
+                    delay(config.getLong("pulse", pulse))
                 }
                 .onCompletion {
                     when {
@@ -76,16 +75,13 @@ class ImportingRdfVerticle : CoroutineVerticle() {
                                 .put("content", "identifierList")
                                 .put("catalogue", catalogue)
                             setResult(
-                                JsonArray(identifiers).encodePrettily(),
+                                JsonArray(identifiers).encode(),
                                 "application/json",
                                 dataInfo
                             ).forward()
                             log.info("Importing finished")
                         }
                     }
-                }
-                .onEach {
-                    delay(config.getLong("pulse", pulse))
                 }
                 .collect { (dataset, dataInfo) ->
                     if (identifiers.contains(dataInfo.getString("identifier"))) {
@@ -99,8 +95,8 @@ class ImportingRdfVerticle : CoroutineVerticle() {
                         log.debug("Data content: {}", it)
                     }
                     dataset.close()
-                    setRunFinished()
                 }
+            setRunFinished()
         }
     }
 
