@@ -2,7 +2,11 @@
 
 ## Unreleased
 
-## 1.7.2 (2022-12-15)
+**Fixed:**
+* Wrong exception catching in page flow 
+* Logger for `DownloadSource` 
+
+## 1.7.2 (2022-12-24)
 
 **Changed:**
 * Load buildInfo once for faster health check

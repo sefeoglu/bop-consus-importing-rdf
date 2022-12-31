@@ -10,7 +10,6 @@ import io.vertx.core.Vertx
 import io.vertx.core.file.OpenOptions
 import io.vertx.core.http.HttpHeaders
 import io.vertx.core.json.JsonObject
-import io.vertx.ext.web.client.HttpResponse
 import io.vertx.ext.web.client.WebClient
 import io.vertx.ext.web.codec.BodyCodec
 import io.vertx.kotlin.coroutines.await
@@ -21,12 +20,15 @@ import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.riot.Lang
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF
+import org.slf4j.LoggerFactory
 import java.io.File
 
 data class Page(val page: Model, val total: Int)
 data class Dataset(val dataset: Model, val dataInfo: JsonObject)
 
 class DownloadSource(private val vertx: Vertx, private val client: WebClient, config: JsonObject) {
+
+    private val log = LoggerFactory.getLogger(javaClass)
 
     private val preProcessing = config.getBoolean("PIVEAU_IMPORTING_PREPROCESSING", false)
 
@@ -48,7 +50,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                 val stream = vertx.fileSystem().open(tmpFileName, OpenOptions().setWrite(true)).await()
                 log.trace("Temp file opened")
 
-                log.trace("Next address: {}", nextLink)
+                log.debug("Next address: {}", nextLink)
                 val request = client.getAbs(nextLink as String).`as`(BodyCodec.pipe(stream, true))
                 if (accept != null) {
                     request.putHeader("Accept", accept)
