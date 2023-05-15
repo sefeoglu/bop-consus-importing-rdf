@@ -120,23 +120,23 @@ _optional_
 ### Environment
 See also piveau-pipe-connector
 
-| Variable| Description | Default Value |
-| :--- | :--- | :--- |
-| `PIVEAU_IMPORTING_SEND_LIST_DELAY` | The delay in millisecond for sending the identifier list after the last dataset | `8000` |
-| `PIVEAU_IMPORTING_PREPROCESSING` | Generally do some pre-processing, e.g. to fix URI encoding issues | `false` |
-| `PIVEAU_DEFAULT_PULSE` | Emitting datasets delay in milliseconds | `15` |
+| Variable                           | Description                                                                     | Default Value |
+|:-----------------------------------|:--------------------------------------------------------------------------------|:--------------|
+| `PIVEAU_IMPORTING_SEND_LIST_DELAY` | The delay in millisecond for sending the identifier list after the last dataset | `8000`        |
+| `PIVEAU_IMPORTING_PREPROCESSING`   | Generally do some pre-processing, e.g. to fix URI encoding issues               | `false`       |
+| `PIVEAU_DEFAULT_PULSE`             | Emitting datasets delay in milliseconds                                         | `15`          |
 
 ### Logging
 See [logback](https://logback.qos.ch/documentation.html) documentation for more details
 
-| Variable| Description | Default Value |
-| :--- | :--- | :--- |
-| `PIVEAU_PIPE_LOG_APPENDER` | Configures the log appender for the pipe context | `STDOUT` |
-| `PIVEAU_LOGSTASH_HOST`            | The host of the logstash service | `logstash` |
-| `PIVEAU_LOGSTASH_PORT`            | The port the logstash service is running | `5044` |
-| `PIVEAU_PIPE_LOG_PATH`     | Path to the file for the file appender | `logs/piveau-pipe.%d{yyyy-MM-dd}.log` |
-| `PIVEAU_PIPE_LOG_LEVEL`    | The log level for the pipe context | `INFO` |
-| `PIVEAU_LOG_LEVEL`    | The general log level for the `io.piveau` package | `INFO` |
+| Variable                   | Description                                       | Default Value                         |
+|:---------------------------|:--------------------------------------------------|:--------------------------------------|
+| `PIVEAU_PIPE_LOG_APPENDER` | Configures the log appender for the pipe context  | `STDOUT`                              |
+| `PIVEAU_LOGSTASH_HOST`     | The host of the logstash service                  | `logstash`                            |
+| `PIVEAU_LOGSTASH_PORT`     | The port the logstash service is running          | `5044`                                |
+| `PIVEAU_PIPE_LOG_PATH`     | Path to the file for the file appender            | `logs/piveau-pipe.%d{yyyy-MM-dd}.log` |
+| `PIVEAU_PIPE_LOG_LEVEL`    | The log level for the pipe context                | `INFO`                                |
+| `PIVEAU_LOG_LEVEL`         | The general log level for the `io.piveau` package | `INFO`                                |
 
 ## License
 
