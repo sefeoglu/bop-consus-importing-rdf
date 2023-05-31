@@ -7,6 +7,7 @@ import io.piveau.utils.gunzip
 import io.vertx.circuitbreaker.CircuitBreaker
 import io.vertx.circuitbreaker.CircuitBreakerOptions
 import io.vertx.core.Vertx
+import io.vertx.core.WorkerExecutor
 import io.vertx.core.file.OpenOptions
 import io.vertx.core.http.HttpHeaders
 import io.vertx.core.json.JsonObject
@@ -22,6 +23,7 @@ import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 data class Page(val page: Model, val total: Int)
 data class Dataset(val dataset: Model, val dataInfo: JsonObject)
@@ -35,6 +37,8 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
     private val circuitBreaker = CircuitBreaker
         .create("importing", vertx, CircuitBreakerOptions().setMaxRetries(2).setTimeout(180000))
         .retryPolicy { _, c -> c * 2000L }
+
+    private val executor = vertx.createSharedWorkerExecutor("modelReader", 20, 10, TimeUnit.MINUTES)
 
     fun pagesFlow(address: String, pipeContext: PipeContext): Flow<Page> = flow {
         var nextLink: String? = address
@@ -83,7 +87,14 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                             }
 
                             val page = try {
-                                JenaUtils.read(content, finalContentType, address)
+                                executor.executeBlocking {
+                                    try {
+                                        val model = JenaUtils.read(content, finalContentType, address)
+                                        it.complete(model)
+                                    } catch (e: Exception) {
+                                        it.fail(e)
+                                    }
+                                }.await()
                             } catch (e: Exception) {
                                 throw Throwable("$nextLink: ${e.message}")
                             }

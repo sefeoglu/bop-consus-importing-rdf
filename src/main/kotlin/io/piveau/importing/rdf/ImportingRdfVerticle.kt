@@ -2,7 +2,7 @@ package io.piveau.importing.rdf
 
 import io.piveau.pipe.PipeContext
 import io.piveau.rdf.RDFMimeTypes
-import io.piveau.rdf.asString
+import io.piveau.rdf.presentAs
 import io.vertx.config.ConfigRetriever
 import io.vertx.config.ConfigRetrieverOptions
 import io.vertx.config.ConfigStoreOptions
@@ -16,12 +16,10 @@ import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlin.coroutines.CoroutineContext
-import kotlin.properties.Delegates
 
 class ImportingRdfVerticle : CoroutineVerticle() {
 
     private lateinit var downloadSource: DownloadSource
-    private var defaultDelay by Delegates.notNull<Long>()
 
     private var pulse: Long = 0
 
@@ -37,13 +35,15 @@ class ImportingRdfVerticle : CoroutineVerticle() {
             .setConfig(
                 JsonObject().put(
                     "keys",
-                    JsonArray().add("PIVEAU_IMPORTING_SEND_LIST_DELAY").add("PIVEAU_IMPORTING_PREPROCESSING")
+                    JsonArray()
+                        .add("PIVEAU_IMPORTING_SEND_LIST_DELAY")
+                        .add("PIVEAU_IMPORTING_PREPROCESSING")
+                        .add("PIVEAU_DEFAULT_PULSE")
                 )
             )
 
         val config = ConfigRetriever.create(vertx, ConfigRetrieverOptions().addStore(envStoreOptions)).config.await()
         downloadSource = DownloadSource(vertx, WebClient.create(vertx), config)
-        defaultDelay = config.getLong("PIVEAU_IMPORTING_SEND_LIST_DELAY", 8000L)
         pulse = config.getLong("PIVEAU_DEFAULT_PULSE", 15)
     }
 
@@ -52,7 +52,6 @@ class ImportingRdfVerticle : CoroutineVerticle() {
             log.info("Import started.")
 
             val outputFormat = config.getString("outputFormat", RDFMimeTypes.NTRIPLES)
-            val delay = config.getLong("sendListDelay", defaultDelay)
             val catalogue = config.getString("catalogue")
 
             val address = config.getString("address")
@@ -70,7 +69,6 @@ class ImportingRdfVerticle : CoroutineVerticle() {
                     when {
                         it != null -> setFailure(it)
                         else -> {
-                            delay(delay)
                             val dataInfo = JsonObject()
                                 .put("content", "identifierList")
                                 .put("catalogue", catalogue)
@@ -89,7 +87,7 @@ class ImportingRdfVerticle : CoroutineVerticle() {
                     }
                     identifiers.add(dataInfo.getString("identifier"))
                     dataInfo.put("counter", identifiers.size).put("catalogue", config.getString("catalogue"))
-                    dataset.asString(outputFormat).let {
+                    dataset.presentAs(outputFormat).let {
                         setResult(it, outputFormat, dataInfo).forward()
                         log.info("Data imported: {}", dataInfo)
                         log.debug("Data content: {}", it)
