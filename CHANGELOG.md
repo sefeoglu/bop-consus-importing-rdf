@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.7.4 (2023-05-31)
+
+**Changed:**
+* Encapsulate reading model/page into `executeBlocking`
+
 ## 1.7.3 (2022-12-31)
 
 **Fixed:**
