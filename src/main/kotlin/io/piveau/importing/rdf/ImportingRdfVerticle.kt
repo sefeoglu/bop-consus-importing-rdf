@@ -25,7 +25,7 @@ class ImportingRdfVerticle : CoroutineVerticle() {
 
     override suspend fun start() {
         vertx.eventBus().consumer(ADDRESS) {
-            launch(vertx.dispatcher() as CoroutineContext) {
+            launch(Dispatchers.IO) {
                 handlePipe(it)
             }
         }
