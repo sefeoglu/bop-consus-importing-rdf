@@ -18,11 +18,13 @@ class MainVerticle : CoroutineVerticle() {
             throw FileAlreadyExistsException("tmp")
         }
 
-        vertx.deployVerticle(ImportingRdfVerticle::class.java, DeploymentOptions().setWorker(true)).await()
-
-        PipeConnector.create(vertx, DeploymentOptions()).await().publishTo(ImportingRdfVerticle.ADDRESS)
+        vertx.deployVerticle(ImportingRdfVerticle::class.java, DeploymentOptions().setWorker(true))
+            .compose {
+                PipeConnector.create(vertx, DeploymentOptions())
+            }
+            .onSuccess { it.publishTo(ImportingRdfVerticle.ADDRESS) }
+            .await()
     }
-
 }
 
 fun main(args: Array<String>) {

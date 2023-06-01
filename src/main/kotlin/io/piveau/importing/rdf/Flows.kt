@@ -7,7 +7,6 @@ import io.piveau.utils.gunzip
 import io.vertx.circuitbreaker.CircuitBreaker
 import io.vertx.circuitbreaker.CircuitBreakerOptions
 import io.vertx.core.Vertx
-import io.vertx.core.WorkerExecutor
 import io.vertx.core.file.OpenOptions
 import io.vertx.core.http.HttpHeaders
 import io.vertx.core.json.JsonObject
@@ -48,7 +47,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
         val brokenHydra = pipeContext.config.getBoolean("brokenHydra", false)
 
         do {
-            val tmpFileName: String = vertx.fileSystem().createTempFile("piveau", ".tmp").await()
+            val tmpFileName: String = vertx.fileSystem().createTempFile("tmp", "piveau", ".tmp", null as String?).await()
             log.trace("Temp file name: {}", tmpFileName)
             try {
                 val stream = vertx.fileSystem().open(tmpFileName, OpenOptions().setWrite(true)).await()
@@ -63,7 +62,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                 val response = request.timeout(120000).send().await()
 
                 val finalFileName = if (address.endsWith(".gz") || response.headers().get("Content-Type").contains("application/gzip")) {
-                    val targetFileName: String = vertx.fileSystem().createTempFile("piveau", ".tmp").await()
+                    val targetFileName: String = vertx.fileSystem().createTempFile("tmp", "piveau", ".tmp", null as String?).await()
                     gunzip(tmpFileName, targetFileName)
                     targetFileName
                 } else tmpFileName
@@ -74,7 +73,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                         if (contentType.isRDF) {
 
                             val (fileName, content, finalContentType) = if (applyPreProcessing) {
-                                val output = vertx.fileSystem().createTempFile("piveau", ".tmp").await()
+                                val output = vertx.fileSystem().createTempFile("tmp", "piveau", ".tmp", null as String?).await()
                                 val (_, finalContentType) = preProcess(
                                     File(finalFileName).inputStream(),
                                     File(output).outputStream(),
@@ -164,7 +163,7 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
                         pipeContext.log.warn("Could not extract an identifier from dataset")
                         if (pipeContext.log.isDebugEnabled) {
                             pipeContext.log.debug(
-                                dataset.extractAsModel()?.asString(Lang.TURTLE) ?: "no model"
+                                dataset.extractAsModel()?.presentAs(Lang.TURTLE) ?: "no model"
                             )
                         }
                     }
