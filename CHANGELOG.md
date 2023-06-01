@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.7.5 (2023-05-31)
+
+**Changed:**
+* Use IO dispatcher in coroutine scope for the worker verticle
+
 ## 1.7.4 (2023-05-31)
 
 **Changed:**
