@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.7.6 (2023-06-05)
+
+**Changed:**
+* Update pipe model with increased serialization string size limitation  
+
 ## 1.7.5 (2023-05-31)
 
 **Changed:**
