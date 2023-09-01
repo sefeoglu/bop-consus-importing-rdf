@@ -8,7 +8,7 @@
     <artifactId>importing-rdf</artifactId>
     <version>1.7.6</version>
 
-    <name>piveau-consus-importing-rdf</name>
+    <name>bop-consus-importing-rdf</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

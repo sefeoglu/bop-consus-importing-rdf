@@ -9,7 +9,6 @@ import io.vertx.config.ConfigStoreOptions
 import io.vertx.core.eventbus.Message
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
-import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 import io.vertx.kotlin.coroutines.dispatcher
@@ -43,7 +42,7 @@ class ImportingRdfVerticle : CoroutineVerticle() {
             )
 
         val config = ConfigRetriever.create(vertx, ConfigRetrieverOptions().addStore(envStoreOptions)).config.await()
-        downloadSource = DownloadSource(vertx, WebClient.create(vertx), config)
+        downloadSource = DownloadSource(vertx, config)
         pulse = config.getLong("PIVEAU_DEFAULT_PULSE", 15)
     }
 
@@ -60,6 +59,7 @@ class ImportingRdfVerticle : CoroutineVerticle() {
             downloadSource.pagesFlow(address, this)
                 .cancellable()
                 .flatMapConcat {
+                    
                     downloadSource.datasetsFlow(it, this)
                 }
                 .onEach {
@@ -83,14 +83,14 @@ class ImportingRdfVerticle : CoroutineVerticle() {
                 }
                 .collect { (dataset, dataInfo) ->
                     if (identifiers.contains(dataInfo.getString("identifier"))) {
-                        log.warn("Duplicate dataset: {}", dataInfo.getString("identifier"))
+                        log.info("Duplicate dataset: {}", dataInfo.getString("identifier"))
                     }
                     identifiers.add(dataInfo.getString("identifier"))
                     dataInfo.put("counter", identifiers.size).put("catalogue", config.getString("catalogue"))
                     dataset.presentAs(outputFormat).let {
                         setResult(it, outputFormat, dataInfo).forward()
                         log.info("Data imported: {}", dataInfo)
-                        log.debug("Data content: {}", it)
+                        log.info("Data content: {}", it)
                     }
                     dataset.close()
                 }

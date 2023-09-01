@@ -8,7 +8,6 @@ import io.vertx.circuitbreaker.CircuitBreaker
 import io.vertx.circuitbreaker.CircuitBreakerOptions
 import io.vertx.core.Vertx
 import io.vertx.core.file.OpenOptions
-import io.vertx.core.http.HttpHeaders
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
 import io.vertx.ext.web.codec.BodyCodec
@@ -27,7 +26,7 @@ import java.util.concurrent.TimeUnit
 data class Page(val page: Model, val total: Int)
 data class Dataset(val dataset: Model, val dataInfo: JsonObject)
 
-class DownloadSource(private val vertx: Vertx, private val client: WebClient, config: JsonObject) {
+class DownloadSource(private val vertx: Vertx, config: JsonObject) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -40,93 +39,75 @@ class DownloadSource(private val vertx: Vertx, private val client: WebClient, co
     private val executor = vertx.createSharedWorkerExecutor("modelReader", 20, 10, TimeUnit.MINUTES)
 
     fun pagesFlow(address: String, pipeContext: PipeContext): Flow<Page> = flow {
+
         var nextLink: String? = address
         val accept = pipeContext.config.getString("accept")
         val inputFormat = pipeContext.config.getString("inputFormat")
         val applyPreProcessing = pipeContext.config.getBoolean("preProcessing", preProcessing)
         val brokenHydra = pipeContext.config.getBoolean("brokenHydra", false)
 
-        do {
-            val tmpFileName: String = vertx.fileSystem().createTempFile("tmp", "piveau", ".tmp", null as String?).await()
-            log.trace("Temp file name: {}", tmpFileName)
-            try {
-                val stream = vertx.fileSystem().open(tmpFileName, OpenOptions().setWrite(true)).await()
-                log.trace("Temp file opened")
 
-                log.debug("Next address: {}", nextLink)
-                val request = client.getAbs(nextLink as String).`as`(BodyCodec.pipe(stream, true))
-                if (accept != null) {
-                    request.putHeader("Accept", accept)
+        val tmpFileName: String = vertx.fileSystem().createTempFile("tmp", "piveau", ".tmp", null as String?).await()
+        log.trace("Temp file name: {}", tmpFileName)
+
+        try {
+            val stream = vertx.fileSystem().open(tmpFileName, OpenOptions().setWrite(true)).await()
+            log.info("Temp file opened")
+            val filePath =  File("").getAbsolutePath();
+
+            val files = File(filePath).listFiles()
+
+            val finalFileName = address
+            val contentType = "application/rdf+xml"
+            if (contentType.isRDF) {
+                    
+                val (fileName, content, finalContentType) = if (applyPreProcessing) {
+                    val output = vertx.fileSystem().createTempFile("tmp", "piveau", ".tmp", null as String?).await()
+
+                    val (_, finalContentType) = preProcess(
+                        File(finalFileName).inputStream(),
+                        File(output).outputStream(),
+                        contentType,
+                        address
+                    )
+                    Triple(output, File(output).inputStream(), finalContentType)
+                } else {
+                    Triple("", File(finalFileName).inputStream(), contentType)
                 }
 
-                val response = request.timeout(120000).send().await()
-
-                val finalFileName = if (address.endsWith(".gz") || response.headers().get("Content-Type").contains("application/gzip")) {
-                    val targetFileName: String = vertx.fileSystem().createTempFile("tmp", "piveau", ".tmp", null as String?).await()
-                    gunzip(tmpFileName, targetFileName)
-                    targetFileName
-                } else tmpFileName
-
-                nextLink = when (response.statusCode()) {
-                    in 200..299 -> {
-                        val contentType = inputFormat ?: response.getHeader(HttpHeaders.CONTENT_TYPE.toString()) ?: "application/rdf+xml"
-                        if (contentType.isRDF) {
-
-                            val (fileName, content, finalContentType) = if (applyPreProcessing) {
-                                val output = vertx.fileSystem().createTempFile("tmp", "piveau", ".tmp", null as String?).await()
-                                val (_, finalContentType) = preProcess(
-                                    File(finalFileName).inputStream(),
-                                    File(output).outputStream(),
-                                    contentType,
-                                    address
-                                )
-                                Triple(output, File(output).inputStream(), finalContentType)
-                            } else {
-                                Triple("", File(finalFileName).inputStream(), contentType)
-                            }
-
-                            val page = try {
-                                executor.executeBlocking {
-                                    try {
-                                        val model = JenaUtils.read(content, finalContentType, address)
-                                        it.complete(model)
-                                    } catch (e: Exception) {
-                                        it.fail(e)
-                                    }
-                                }.await()
+                val page = try {
+                    executor.executeBlocking {
+                            try {
+                                val model = JenaUtils.read(content, finalContentType, address)
+                                it.complete(model)
                             } catch (e: Exception) {
-                                throw Throwable("$nextLink: ${e.message}")
+                                it.fail(e)
                             }
-
-                            if (fileName.isNotBlank()) {
-                                vertx.fileSystem().delete(fileName)
-                            }
-
-                            val hydraPaging = HydraPaging.findPaging(page, if (brokenHydra) address else null)
-
-                            val next = hydraPaging.next
-
-                            emit(Page(page, hydraPaging.total))
-
-                            next
-
-                        } else {
-                            throw Throwable("$nextLink: Content-Type $contentType is not an RDF content type. Content:\n${response.bodyAsString()}")
-                        }
-                    }
-                    else -> {
-                        throw Throwable("$nextLink: ${response.statusCode()} - ${response.statusMessage()}\n${response.bodyAsString()}")
-                    }
+                        }.await()
+                } catch (e: Exception) {
+                    throw Throwable("$address: ${e.message}")
                 }
-                if (finalFileName != tmpFileName) {
-                    vertx.fileSystem().delete(finalFileName)
+
+                if (fileName.isNotBlank()) {
+                    vertx.fileSystem().delete(fileName)
                 }
-            } finally {
-                log.debug("Deleting temp file {}", tmpFileName)
-                vertx.fileSystem().delete(tmpFileName)
+
+                val hydraPaging = HydraPaging.findPaging(page, if (brokenHydra) address else null)
+
+                val next = hydraPaging.next
+
+                emit(Page(page, hydraPaging.total))
+
+
+            } else {
+                throw Throwable(" Content-Type $contentType is not an RDF content type.")
             }
 
-        } while (nextLink != null)
+
+        } finally {
+            log.debug("Deleting temp file {}", tmpFileName)
+            vertx.fileSystem().delete(tmpFileName)
+        }
     }
 
     fun datasetsFlow(page: Page, pipeContext: PipeContext): Flow<Dataset> = flow {
