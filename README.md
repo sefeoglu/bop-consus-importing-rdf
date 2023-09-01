@@ -1,4 +1,4 @@
-# piveau importing rdf
+# bop importing rdf
 Microservice for importing from source and feeding a pipe.
 
 The service is based on the piveau-pipe-connector library. Any configuration applicable for the pipe-connector can also be used for this service.
@@ -22,7 +22,7 @@ Requirements:
 
 ```bash
 $ git clone <gitrepouri>
-$ cd piveau-importing-rdf
+$ cd bop-importing-rdf
 $ mvn package
 ```
 
@@ -37,13 +37,13 @@ $ java -jar target/importing-rdf.jar
 Build docker image:
 
 ```bash
-$ docker build -t piveau/piveau-importing-rdf .
+$ docker build -t bop/bop-importing-rdf .
 ```
 
 Run docker image:
 
 ```bash
-$ docker run -it -p 8080:8080 piveau/piveau-importing-rdf
+$ docker run -it -p 8080:8080 bop/bop-importing-rdf
 ```
 
 ## Configuration
@@ -93,11 +93,11 @@ _optional_
  
 * `sendListDelay`
 
-    The delay in milliseconds before the list of identifiers is send. Take precedence over service configuration (see `PVEAU_IMPORTING_SEND_LIST_DELAY`)
+    The delay in milliseconds before the list of identifiers is send. Take precedence over service configuration (see `BOP_IMPORTING_SEND_LIST_DELAY`)
 
 * `preProcessing`
 
-    Any pre-processing (e.g. URI encoding fixes) should take place. Overwrites importers configuration (see `PIVEAU_IMPORTING_PREPROCESSING`)
+    Any pre-processing (e.g. URI encoding fixes) should take place. Overwrites importers configuration (see `BOP_IMPORTING_PREPROCESSING`)
 
 ### Data Info Object
 
@@ -118,13 +118,13 @@ _optional_
     The id of the target catalogue
 
 ### Environment
-See also piveau-pipe-connector
+See also bop-pipe-connector
 
 | Variable                           | Description                                                                     | Default Value |
 |:-----------------------------------|:--------------------------------------------------------------------------------|:--------------|
-| `PIVEAU_IMPORTING_SEND_LIST_DELAY` | The delay in millisecond for sending the identifier list after the last dataset | `8000`        |
-| `PIVEAU_IMPORTING_PREPROCESSING`   | Generally do some pre-processing, e.g. to fix URI encoding issues               | `false`       |
-| `PIVEAU_DEFAULT_PULSE`             | Emitting datasets delay in milliseconds                                         | `15`          |
+| `BOP_IMPORTING_SEND_LIST_DELAY` | The delay in millisecond for sending the identifier list after the last dataset | `8000`        |
+| `BOP_IMPORTING_PREPROCESSING`   | Generally do some pre-processing, e.g. to fix URI encoding issues               | `false`       |
+| `BOP_DEFAULT_PULSE`             | Emitting datasets delay in milliseconds                                         | `15`          |
 
 ### Logging
 See [logback](https://logback.qos.ch/documentation.html) documentation for more details
