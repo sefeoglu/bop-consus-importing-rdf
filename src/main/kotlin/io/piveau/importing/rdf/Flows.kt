@@ -76,9 +76,9 @@ class DownloadSource(private val vertx: Vertx, config: JsonObject) {
                 throw Throwable("$address: ${e.message}")
             }
 
-            if (fileName.isNotBlank()) {
-                vertx.fileSystem().delete(fileName)
-            }
+            log.info("File name: {}",finalFileName)
+            vertx.fileSystem().delete(finalFileName)
+            
 
             val hydraPaging = HydraPaging.findPaging(page, if (brokenHydra) address else null)
 
